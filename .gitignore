@@ -1,3 +1,9 @@
 .DS_Store
 test.py
 test.ipynb
+temp.py
+temp.ipynb
+/venv
+
+tests
+__pycache__

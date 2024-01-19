@@ -2,7 +2,6 @@ var config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
     height: window.innerHeight,
-    // background should be tan
     backgroundColor: '#1C1C1C',
     scene: {
         preload: preload,

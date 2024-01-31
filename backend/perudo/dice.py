@@ -23,6 +23,8 @@ class Die:
     def __ge__(self, other):
         return True if self > other or self == other else False
 
+
+# not currently used but could be useful in the future
 class D6(Die):
     '''A six-sided die.'''
     def __init__(self, value=None):

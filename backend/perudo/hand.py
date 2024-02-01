@@ -6,7 +6,7 @@ class Hand(list):
     '''A "hand" of dice.
     Extends the list class.'''
 
-    def __init__(self, size=5, values=None, sides_per_die=6):
+    def __init__(self, size=5, sides_per_die=6, values=None):
         if values:
             if len(values) != size:
                 raise ValueError(f'Need to pass in {size} values!')

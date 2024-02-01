@@ -6,11 +6,11 @@ This holds all the game logic for Perudo.
 ## Glossary
 Game - a full game of perudo, from start to finish - from everyone having all their dice to last person standing
 Round - A single turn around the circle, starting with an initial call and ending with someone losing a die
-Move - a single action taken by a player in a round, either a dudo or a bid
+Move - a single action taken by a player in a round, either a call or a bid
     Quantity - a number of dice ex. 3 dice
     Value - the face value of a die ex. 4's
     Bid - a call of a quantity and a value by a player, increasing the bid
-    Dudo - a call of "Dudo" by a player, challenging the previous bid
+    Call - a call of "Dudo" by a player, challenging the previous bid
     
 Jessie - during normal play, a 1 is called a 'jessie', and counts as a wild aka it counts as any number
 Normie - during normal play, any value other than 1 is called a 'normie' and counts as itself

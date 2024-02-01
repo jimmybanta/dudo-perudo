@@ -80,9 +80,48 @@ def legal_bids(current, total_dice,
             necessary_quantity = math.ceil(current_quantity / 2) - 1
             legal_bids += higher_quantity_bids(necessary_quantity, total_dice, 
                                                 value_range=(1, 1))
+            
+    ## check for duplicates
+    legal_bids = sorted(list(set(legal_bids)))
+    ## remove any bids that have a quantity of 0
+    legal_bids = [bid for bid in legal_bids if bid[0] != 0]
+
 
     return legal_bids
         
+def legal_starting_bids(total_dice, 
+                        sides_per_die=6,
+                        palifico=False):
+    '''
+    Returns a list of all legal starting bids.
+    A player must bid a quantity of at least 1.
+
+    Parameters
+    ----------
+    total_dice : int
+        The total number of dice in the game.
+    sides_per_die : int || default: 6
+        The number of sides on each die.
+    palifico : bool || default: False
+        Whether the current round is a palifico round or not.
+    '''
+
+    legal_starting_bids = []
+
+    # palifico logic
+    if palifico:
+        # can start with any value
+        legal_starting_bids += higher_quantity_bids(0, total_dice,
+                                                value_range=(1, sides_per_die))
+            
+    # standard play logic
+    else:
+        # you can't start with jessies - must start with a value of 2 or higher
+        legal_starting_bids += higher_quantity_bids(0, total_dice,
+                                                value_range=(2, sides_per_die))
+    
+    return legal_starting_bids
+
 
 
 
@@ -132,17 +171,20 @@ def higher_quantity_bids(quantity, total_dice,
 
 if __name__ == '__main__':
 
-    current = (4, 2)
+    current = (0, 6)
     current_quantity, current_value = current[0], current[1]
     total_dice = 10
     sides_per_die = 6
     palifico = False
     ex_palifico = False
 
-    value_range = (1, 1)
+    value_range = (1, 6)
 
-    bids = higher_quantity_bids(current_quantity, total_dice,
-                    value_range=value_range)
+    """ bids = legal_bids(current, total_dice, 
+                      sides_per_die=sides_per_die, 
+                      palifico=palifico, ex_palifico=ex_palifico) """
+    
+    bids = legal_starting_bids(2, sides_per_die=6, palifico=False)
     
     def print_list_with_newlines(lst, items_per_line=7):
         for i, item in enumerate(lst, start=1):

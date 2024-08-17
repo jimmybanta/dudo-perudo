@@ -13,12 +13,13 @@ class LocalGame:
     '''A game of Perudo, run locally in the console.
     For testing putposes.'''
 
-    def __init__(self, human=True, ai_players=None, 
+    def __init__(self, human=True, ai_players=None, can_choose_direction=False,
                  dice_per_player=5, sides_per_die=6):
         
         self.human = human
         self.sides_per_die = sides_per_die
         self.dice_per_player = dice_per_player
+        self.can_choose_direction = can_choose_direction
         
         self.players = []
 
@@ -83,7 +84,8 @@ class LocalGame:
                 print(f' Player: {str(player)} -- {player.num_dice} dice')
 
             # start the round
-            round = Round(self.players, starting_player, palifico=palifico)
+            round = Round(self.players, starting_player, 
+                          palifico=palifico, can_choose_direction=self.can_choose_direction)
 
             # run the round
             round.run()
@@ -133,10 +135,11 @@ class Round:
     You need to give it the players and the starting player, and it will run the round,
     and return information about the round.'''
 
-    def __init__(self, players, starting_player, palifico=False):
+    def __init__(self, players, starting_player, palifico=False, can_choose_direction=False):
         self.players = players
         self.starting_player = starting_player
         self.palifico = palifico
+        self.can_choose_direction = can_choose_direction
 
         # roll the dice and get them all together
         self.all_dice = []
@@ -163,10 +166,13 @@ class Round:
         # get the bid from the player
         bid = self.starting_player.starting_bid(self.total_dice, palifico=palifico)
 
-        # get the direction from the player
-        if len(self.players) > 2:
-            direction = self.starting_player.starting_direction(self.players, palifico=palifico)
-        # if there are only two players, direction doesn't matter
+        if self.can_choose_direction:
+            # get the direction from the player
+            if len(self.players) > 2:
+                direction = self.starting_player.starting_direction(self.players, palifico=palifico)
+            # if there are only two players, direction doesn't matter
+            else:
+                direction = 'down'
         else:
             direction = 'down'
 
@@ -260,7 +266,8 @@ if __name__ == '__main__':
     
 
     game = LocalGame(human=human, ai_players=ai_players,
-                        dice_per_player=dice_per_player, sides_per_die=sides_per_die)
+                        dice_per_player=dice_per_player, sides_per_die=sides_per_die,
+                        can_choose_direction=False)
     
     game.play()
     

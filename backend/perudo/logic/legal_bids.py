@@ -1,4 +1,4 @@
-''' Holds functions for determining legal bids. '''
+''' Functions for determining legal bids. '''
 
 import math
 

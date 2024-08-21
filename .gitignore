@@ -3,8 +3,9 @@ test.py
 test.ipynb
 temp.py
 temp.ipynb
-/venv
+*/venv
 .env
+run.py
 
 tests
 __pycache__

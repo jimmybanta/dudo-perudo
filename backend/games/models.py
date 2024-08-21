@@ -4,12 +4,14 @@ from django.db import models
 
 class Game(models.Model):
 
-    player_name = models.CharField(max_length=200, null=True)
+    player = models.CharField(max_length=200, null=True)
 
-    # players is going to be a list of all the players
-    # starting with the human player (name given by player_name)
+    dice_per_player = models.IntegerField(null=True)
+
+    # table is a list of all the players
+    # starting with the human player (name given by player)
     # then all the AI players after, in the order they should sit at the table, clockwise
-    players = models.JSONField(null=True)
+    table = models.JSONField(null=True)
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

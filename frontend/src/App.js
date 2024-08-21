@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { React, useState } from 'react';
 
@@ -19,10 +18,10 @@ function App() {
     <Home
     onSetCurrentPage={(page) => setCurrentPage(page)}
      />}
-    {currentPage === 'Instructions' && 
-    <Instructions />}
     {currentPage === 'Play' &&
       <Play />}
+    {currentPage === 'Instructions' && 
+      <Instructions />}
     {currentPage === 'Settings' &&
       <Settings />}
       

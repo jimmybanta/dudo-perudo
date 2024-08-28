@@ -201,7 +201,7 @@ class Round:
         turn = 1
 
         # when move is false, that means someone is calling
-        while move:
+        while move != 'call':
 
             current_bid = move
             # add the bid to the history

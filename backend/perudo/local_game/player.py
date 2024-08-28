@@ -34,7 +34,7 @@ class Player:
         self.num_dice -= 1
     
     def __str__(self):
-        return self.name
+        return self.name if self.name else super().__str__()
 
     @property
     def one_left(self):
@@ -140,9 +140,9 @@ class AIRandomPlayer(AIPlayer):
 
         n = random.random()
 
-        # 25% chance of calling
-        if n < 0.25:
-            return False
+        # 0% chance of calling
+        if n < 0:
+            return 'call'
 
         # 75% chance of bidding
         allowed_bids = legal_bids(bid, total_dice, 
@@ -152,7 +152,7 @@ class AIRandomPlayer(AIPlayer):
         
         # if there are no legal bids to make, then call
         if not allowed_bids:
-            return False
+            return 'call'
 
         # otherwise, randomly select a bid
         return random.choice(allowed_bids)

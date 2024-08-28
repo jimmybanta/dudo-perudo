@@ -12,6 +12,7 @@ const Setup = (props) => {
 
     const [player, setPlayer] = useState(props.player);
     const [dicePerPlayer, setDicePerPlayer] = useState(props.dicePerPlayer);
+    const [sidesPerDie, setSidesPerDie] = useState(props.sidesPerDie);
     const [table, setTable] = useState(props.table);
 
     const [characters, setCharacters] = useState([]);
@@ -106,6 +107,16 @@ const Setup = (props) => {
                         />
                         
                     </div>
+                    <div className='container'>
+                        <h3>Sides per die:</h3>
+                        <Input
+                            type='number'
+                            value={sidesPerDie}
+                            onChange={(e) => {
+                                setSidesPerDie(e.target.value);
+                            }}
+                        />
+                    </div>
                     <h2>Craft your table</h2>
                     <div className='container'>
                         <div className='row'>
@@ -133,7 +144,8 @@ const Setup = (props) => {
                         </div>
                         <div className='row'>
                                 <Button
-                                    onClick={() => {props.onSave(player, dicePerPlayer, table)}}
+                                    onClick={() => 
+                                        {props.onSave(player, dicePerPlayer, sidesPerDie, table)}}
                                 >
                                     Let's play some fuckin perudo!
                                 </Button>

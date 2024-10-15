@@ -3,32 +3,44 @@ import axios from 'axios';
 import { Input, Button } from 'reactstrap';
 import { BASE_URL } from '../../interceptors';
 
+import { apiCall } from '../../api';
+
 axios.defaults.baseURL = BASE_URL;
 
-
-const Setup = (props) => {
-    /* component that sets up the game, in the frontend
-    setting up includes getting the player's name and choosing the players at the table */
-
-    const [player, setPlayer] = useState(props.player);
-    const [dicePerPlayer, setDicePerPlayer] = useState(props.dicePerPlayer);
-    const [sidesPerDie, setSidesPerDie] = useState(props.sidesPerDie);
-    const [table, setTable] = useState(props.table);
-
-    const [characters, setCharacters] = useState([]);
+const defaultDicePerPlayer = 5;
+const defaultSidesPerDie = 6;
 
 
+
+
+const Setup = ({ onSave }) => {
+    // component that sets up the game
+
+
+    const [player, setPlayer] = useState(null); // the player's name
+    const [dicePerPlayer, setDicePerPlayer] = useState(defaultDicePerPlayer); // the number of dice per player
+    const [sidesPerDie, setSidesPerDie] = useState(defaultSidesPerDie); // the number of sides per die
+    const [table, setTable] = useState([]); // the table of players
+
+    const [characters, setCharacters] = useState([]); // the characters to choose from
+
+
+    // get the characters
     useEffect(() => {
+
         const fetchCharacters = async () => {
-            try {
-                let response = await axios({
-                    method: 'get',
-                    url: '/games/api/characters/'
-                });
-                setCharacters(response.data);
-            } catch (error) {
-                console.error('Error:', error);
+
+            const [charactersSuccess, charactersResp] = await apiCall({
+                method: 'get',
+                url: '/games/api/characters/',
+            });
+
+            if (!charactersSuccess) {
+                alert(charactersResp.data);
+                return;
             }
+
+            setCharacters(charactersResp);
         };
 
         // load in the characters
@@ -144,8 +156,7 @@ const Setup = (props) => {
                         </div>
                         <div className='row'>
                                 <Button
-                                    onClick={() => 
-                                        {props.onSave(player, dicePerPlayer, sidesPerDie, table)}}
+                                    onClick={() => onSave(player, dicePerPlayer, sidesPerDie, table)}
                                 >
                                     Let's play some fuckin perudo!
                                 </Button>

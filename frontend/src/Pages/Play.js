@@ -7,6 +7,8 @@ import Game from './GamePages/Game';
 
 import { apiCall } from '../api';
 
+import { rollDice } from '../utils';
+
 
 axios.defaults.baseURL = BASE_URL;
 
@@ -15,48 +17,27 @@ axios.defaults.baseURL = BASE_URL;
 const Play = () => {
 
     // temp setup
-    /* 
+
+    const [dicePerPlayer, setDicePerPlayer] = useState(2);
+
     const [player, setPlayer] = useState('crespin');
+    const [gameID, setGameID] = useState(59);
     const [table, setTable] = useState(['crespin', 'riyaaz', 'jimmy', 'adam', 'adam-2', 'theo']);
-    const [dicePerPlayer, setDicePerPlayer] = useState(defaultDicePerPlayer);
-    const [sidesPerDie, setSidesPerDie] = useState(defaultSidesPerDie);
+    const [tableDict, setTableDict] = useState({
+        'crespin': {'dice': dicePerPlayer, 'hand': rollDice(dicePerPlayer, 6), 'ex-palifico': false},
+        'riyaaz': {'dice': dicePerPlayer, 'hand': rollDice(dicePerPlayer, 6), 'ex-palifico': false},
+        'jimmy': {'dice': dicePerPlayer, 'hand': rollDice(dicePerPlayer, 6), 'ex-palifico': false},
+        'adam': {'dice': dicePerPlayer, 'hand': rollDice(dicePerPlayer, 6), 'ex-palifico': false},
+        'adam-2': {'dice': dicePerPlayer, 'hand': rollDice(dicePerPlayer, 6), 'ex-palifico': false},
+        'theo': {'dice': dicePerPlayer, 'hand': rollDice(dicePerPlayer, 6), 'ex-palifico': false},
+    });
+    const [currentPlayer, setCurrentPlayer] = useState('crespin');
+    const [sidesPerDie, setSidesPerDie] = useState(6);
+
     const [setupComplete, setSetupComplete] = useState(true);
 
-    const [game, setGame] = useState(59);
-    
-    const [lastPlayer, setLastPlayer] = useState(null);
-    const [lastBid, setLastBid] = useState(null);
 
-    const [currentPlayer, setCurrentPlayer] = useState('crespin');
-    const [currentBid, setCurrentBid] = useState(null);
-
-    // display variables -- to be displayed
-    const [displayLastPlayer, setDisplayLastPlayer] = useState(null);
-    const [displayLastBid, setDisplayLastBid] = useState(null);
-    const [displayCurrentPlayer, setDisplayCurrentPlayer] = useState('crespin');
-    const [displayCurrentBid, setDisplayCurrentBid] = useState(null);
-
-    const [roundHistory, setRoundHistory] = useState([]);
-    const roundHistoryRef = useRef(roundHistory);
-
-    const [showEndRound, setShowEndRound] = useState(false);
-    const [roundLoser, setRoundLoser] = useState(null);
-    const roundLoserRef = useRef(roundLoser);
-    const [roundTotal, setRoundTotal] = useState(null);
-
-    const [tableDict, setTableDict] = useState({
-        'crespin': {'dice': 5, 'hand': rollDice(5, 6), 'ex-palifico': false},
-        'riyaaz': {'dice': 5, 'hand': rollDice(5, 6), 'ex-palifico': false},
-        'jimmy': {'dice': 5, 'hand': rollDice(5, 6), 'ex-palifico': false},
-        'adam': {'dice': 5, 'hand': rollDice(5, 6), 'ex-palifico': false},
-        'adam-2': {'dice': 5, 'hand': rollDice(5, 6), 'ex-palifico': false},
-        'theo': {'dice': 5, 'hand': rollDice(5, 6), 'ex-palifico': false},
-    });
-    const [palifico, setPalifico] = useState(false); 
-    */
-
-
-    //// Setup variables
+    /* //// Setup variables
 
     const [player, setPlayer] = useState(null); // the player's name
     const [table, setTable] = useState([]); // the table of players
@@ -71,14 +52,16 @@ const Play = () => {
     //// game state
     // gameID is the ID of the game in the backend
     const [gameID, setGameID] = useState({});
-    // tableDict is the dictionary of players with how many dice they have left, their hands, and whether they're ex=palifico
+    // tableDict is the dictionary of players with how many dice they have left, their hands, and whether they're ex-palifico
     const [tableDict, setTableDict] = useState({});
-    const tableDictRef = useRef(tableDict);
+
+    // currentPlayer is the player whose turn it is
+    const [currentPlayer, setCurrentPlayer] = useState(null); */
      
 
     //// round variables - specific to a round
     // roundHistory is the history of the round
-    const [roundHistory, setRoundHistory] = useState([]);
+    /* const [roundHistory, setRoundHistory] = useState([]);
     const roundHistoryRef = useRef(roundHistory);
     // palifico is a boolean to determine if the round is palifico
     const [palifico, setPalifico] = useState(false);
@@ -86,8 +69,7 @@ const Play = () => {
     const [lastPlayer, setLastPlayer] = useState(null);
     // lastBid is the last bid made 
     const [lastBid, setLastBid] = useState(null);
-    // currentPlayer is the player whose turn it is
-    const [currentPlayer, setCurrentPlayer] = useState(null);
+    
     // currentBid is the current bid
     const [currentBid, setCurrentBid] = useState(null);   
     // roundLoser is the player who lost the round
@@ -106,7 +88,7 @@ const Play = () => {
     // displayCurrentBid is the current bid to be displayed
     const [displayCurrentBid, setDisplayCurrentBid] = useState(null);
     // showEndRound is a boolean to determine if the end round display should be shown
-    const [showEndRound, setShowEndRound] = useState(false);
+    const [showEndRound, setShowEndRound] = useState(false); */
     
 
 
@@ -129,7 +111,7 @@ const Play = () => {
         });
 
         if (!initializeSuccess) {
-            alert(initializeResp.data);
+            alert(initializeResp);
             return;
         }
 
@@ -146,11 +128,10 @@ const Play = () => {
         );
 
         setTableDict(tempTableDict);
-        tableDictRef.current = tempTableDict;
 
-        let startingPlayer = initializeResp.data.starting_player;
+        let startingPlayer = initializeResp.starting_player;
 
-        setGameID(initializeResp.data.game_id);
+        setGameID(initializeResp.game_id);
         setCurrentPlayer(startingPlayer);
         console.log('starting player:', startingPlayer);
 
@@ -181,9 +162,12 @@ const Play = () => {
             {/* Then, play the game */}
             {setupComplete && (
                 <Game 
-                player={player}
-                table={table}
-                sidesPerDie={sidesPerDie}
+                    player={player}
+                    gameID={gameID}
+                    table={table}
+                    playTableDict={tableDict}
+                    playCurrentPlayer={currentPlayer}
+                    sidesPerDie={sidesPerDie}
                 />
             
             )}

@@ -10,7 +10,7 @@ def legal_bids(current, total_dice,
 
     Parameters
     ----------
-    current : tuple
+    current : tuple/list
         The current bid.
     total_dice : int
         The total number of dice in the game.

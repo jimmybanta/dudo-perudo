@@ -4,6 +4,8 @@ import { Button, Input } from 'reactstrap';
 import axios from 'axios';
 
 
+import { apiCall } from '../../../api';
+
 
 
 
@@ -19,22 +21,34 @@ const PlayerBid = (props) => {
 
 
     useEffect(() => {
-        axios.post('/games/legal_bids/', {
-            table_dict: tableDict,
-            sides_per_die: sidesPerDie,
-            palifico: palifico,
-            round_history: roundHistory,
-        })
-        .then(response => {
 
-            setLegalBids(response.data.legal_bids.map(bid => {
+        const loadLegalBids = async () => {
+
+            const [bidsSuccess, bidsResp] = await apiCall({
+                method: 'post',
+                url: '/games/legal_bids/',
+                data: {
+                    table_dict: tableDict,
+                    sides_per_die: sidesPerDie,
+                    palifico: palifico,
+                    round_history: roundHistory,
+                    current_player: currentPlayer
+                }
+            });
+
+            if (!bidsSuccess) {
+                alert(bidsResp);
+                return;
+            }
+
+            setLegalBids(bidsResp.legal_bids.map(bid => {
                 return [parseInt(bid[0]), parseInt(bid[1])];
             }
             ));
-        })
-        .catch(error => {
-            console.log('Error:', error);
-        });
+        };
+
+        loadLegalBids();
+
     }
     , [tableDict, currentPlayer]);
 

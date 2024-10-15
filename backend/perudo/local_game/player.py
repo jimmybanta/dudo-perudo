@@ -134,7 +134,7 @@ class AIRandomPlayer(AIPlayer):
         return random.choice(['up', 'down'])
 
     
-    def move(self, bid, history, total_dice, palifico=False):
+    def move(self, round_history, game_history, total_dice, palifico=False):
         '''Randomly chooses to call (prob .25) or to bid (prob .75). 
         If bidding, randomly selects a bid from all allowed bids.'''
 
@@ -145,7 +145,7 @@ class AIRandomPlayer(AIPlayer):
             return 'call'
 
         # 75% chance of bidding
-        allowed_bids = legal_bids(bid, total_dice, 
+        allowed_bids = legal_bids(round_history[-1][1], total_dice, 
                                   sides_per_die=self.sides_per_die,
                                   palifico=palifico,
                                   ex_palifico=self.ex_palifico)

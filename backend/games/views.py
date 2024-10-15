@@ -33,6 +33,7 @@ def initialize_game(request):
     player = request.data['player']
     table = request.data['table']
     dice_per_player = request.data['dice_per_player']
+    sides_per_die = request.data['sides_per_die']
 
     # check if the human player has been added as the first player in table
     if player != table[0]:
@@ -44,6 +45,7 @@ def initialize_game(request):
     game.player = player
     game.table = table
     game.dice_per_player = dice_per_player
+    game.sides_per_die = sides_per_die
 
     game.save()
 
@@ -109,7 +111,11 @@ def legal_bids(request):
     round_history = request.data['round_history']
 
     # get total num of dice
-    total_dice = sum([table_dict[player]['dice'] for player in table_dict])
+    try:
+        total_dice = sum([int(table_dict[player]['dice']) for player in table_dict])
+    except:
+        print('problem')
+        print(table_dict)
     
     # if there's no round history, then we're at the beginning of the round
     # we want to get the starting bids for the player

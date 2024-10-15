@@ -15,33 +15,16 @@ const defaultSidesPerDie = 6;
 
 const Play = () => {
 
-
-    /* Setup variables */
-    /* player is the human player's name */
-    /* const [player, setPlayer] = useState(null);
-    /* table is the list of players at the table - it will be the player, plus AI's */
-    /* const [table, setTable] = useState([]);
-    const [dicePerPlayer, setDicePerPlayer] = useState(defaultDicePerPlayer);
-    const [sidesPerDie, setSidesPerDie] = useState(defaultSidesPerDie);
-
-    const [setupComplete, setSetupComplete] = useState(false); */
-
-
-    /* Game variables */
-    /* const [game, setGame] = useState({});
-    const [tableDict, setTableDict] = useState({});
-    const [currentPlayer, setCurrentPlayer] = useState(null); */
-
-    /* temp setup */
+    // temp setup
+    /* 
     const [player, setPlayer] = useState('crespin');
     const [table, setTable] = useState(['crespin', 'riyaaz', 'jimmy', 'adam', 'adam-2', 'theo']);
     const [dicePerPlayer, setDicePerPlayer] = useState(defaultDicePerPlayer);
     const [sidesPerDie, setSidesPerDie] = useState(defaultSidesPerDie);
     const [setupComplete, setSetupComplete] = useState(true);
 
-
     const [game, setGame] = useState(59);
-
+    
     const [lastPlayer, setLastPlayer] = useState(null);
     const [lastBid, setLastBid] = useState(null);
 
@@ -70,11 +53,73 @@ const Play = () => {
         'adam-2': {'dice': 5, 'hand': rollDice(5, 6), 'ex-palifico': false},
         'theo': {'dice': 5, 'hand': rollDice(5, 6), 'ex-palifico': false},
     });
+    const [palifico, setPalifico] = useState(false); 
+    */
+
+
+    //// Setup variables
+
+    // player is the human player's name
+    const [player, setPlayer] = useState(null);
+    // table is the list of players at the table - it will be the player, plus AI's
+    const [table, setTable] = useState([]);
+    // dicePerPlayer is the number of dice each player starts with
+    const [dicePerPlayer, setDicePerPlayer] = useState(defaultDicePerPlayer);
+    // sidesPerDie is the number of sides on each die
+    const [sidesPerDie, setSidesPerDie] = useState(defaultSidesPerDie);
+    // setupComplete is a boolean to determine if the game setup is complete
+    const [setupComplete, setSetupComplete] = useState(false);
+
+
+    //////// Game variables
+
+    //// game state
+    // gameID is the ID of the game in the backend
+    const [gameID, setGameID] = useState({});
+    // tableDict is the dictionary of players with how many dice they have left, their hands, and whether they're ex=palifico
+    const [tableDict, setTableDict] = useState({});
+    const tableDictRef = useRef(tableDict);
+     
+
+    //// round variables - specific to a round
+    // roundHistory is the history of the round
+    const [roundHistory, setRoundHistory] = useState([]);
+    const roundHistoryRef = useRef(roundHistory);
+    // palifico is a boolean to determine if the round is palifico
     const [palifico, setPalifico] = useState(false);
+    // lastPlayer is the player who made the last bid
+    const [lastPlayer, setLastPlayer] = useState(null);
+    // lastBid is the last bid made 
+    const [lastBid, setLastBid] = useState(null);
+    // currentPlayer is the player whose turn it is
+    const [currentPlayer, setCurrentPlayer] = useState(null);
+    // currentBid is the current bid
+    const [currentBid, setCurrentBid] = useState(null);   
+    // roundLoser is the player who lost the round
+    const [roundLoser, setRoundLoser] = useState(null);
+    const roundLoserRef = useRef(roundLoser);
+    // roundTotal is the total of the specific value that was lifted on
+    const [roundTotal, setRoundTotal] = useState(null);
+
+    //// display variables - variables governing what is displayed
+    // displayLastPlayer is the player who made the last bid to be displayed
+    const [displayLastPlayer, setDisplayLastPlayer] = useState(null);
+    // displayLastBid is the last bid to be displayed
+    const [displayLastBid, setDisplayLastBid] = useState(null);
+    // displayCurrentPlayer is the player whose turn it is to be displayed
+    const [displayCurrentPlayer, setDisplayCurrentPlayer] = useState(null);
+    // displayCurrentBid is the current bid to be displayed
+    const [displayCurrentBid, setDisplayCurrentBid] = useState(null);
+    // showEndRound is a boolean to determine if the end round display should be shown
+    const [showEndRound, setShowEndRound] = useState(false);
+    
 
 
     /* To Setup the game in the backend */
-    const handleSetup = async (player, dicePerPlayer, table) => {
+    const handleSetup = async (player, dicePerPlayer, sidesPerDie, table) => {
+
+        dicePerPlayer = parseInt(dicePerPlayer);
+        sidesPerDie = parseInt(sidesPerDie);
 
         try {
             let response = await axios({
@@ -83,6 +128,7 @@ const Play = () => {
                 data: {
                     player: player,
                     dice_per_player: dicePerPlayer,
+                    sides_per_die: sidesPerDie,
                     table: table
                 }
             });
@@ -90,19 +136,28 @@ const Play = () => {
             let tempTableDict = {};
 
             table.forEach(player => {
-                tempTableDict[player] = dicePerPlayer;
+                tempTableDict[player] = {
+                    'dice': dicePerPlayer,
+                    'hand': [],
+                    'ex-palifico': false
+                }
             }
             );
 
-
             setTableDict(tempTableDict);
-            setGame(response.data.game_id);
-            setCurrentPlayer(response.data.current_player);
+            tableDictRef.current = tempTableDict;
 
-            // have a function here that sets up a round
+            let startingPlayer = response.data.starting_player;
+
+            setGameID(response.data.game_id);
+            setCurrentPlayer(startingPlayer);
+            console.log('starting player:', startingPlayer);
+
+            // start the first round
+            await handleStartRound(startingPlayer);
             setSetupComplete(true);
         } catch (error) {
-            alert('Error:', error);
+            console.log('Error:', error);
             alert('Please refresh and try again.');
         }
 
@@ -184,7 +239,7 @@ const Play = () => {
                         bid: bid,
                         round_history: roundHistoryRef.current,
                         table: table,
-                        table_dict: tableDict,
+                        table_dict: tableDictRef.current,
                         palifico: palifico
                     }
                 });
@@ -214,7 +269,7 @@ const Play = () => {
                     bid: null,
                     round_history: roundHistoryRef.current,
                     table: table,
-                    table_dict: tableDict,
+                    table_dict: tableDictRef.current,
                     palifico: palifico
                 }
             });
@@ -272,14 +327,17 @@ const Play = () => {
 
 
     /* to handle starting a round */
-    const handleStartRound = (startingPlayer) => {
+    const handleStartRound = async (startingPlayer) => {
+
+        console.log(player);
 
         // need to roll hands for everyone
-        let tempTableDict = tableDict;
+        let tempTableDict = {...tableDictRef.current};
         for (const player in tempTableDict) {
             tempTableDict[player]['hand'] = rollDice(tempTableDict[player]['dice'], sidesPerDie);
         }
         setTableDict(tempTableDict);
+        tableDictRef.current = tempTableDict;
 
         // setup the players
         setLastPlayer(null);
@@ -303,9 +361,10 @@ const Play = () => {
         setRoundTotal(null);
 
         // set palifico
-        setPalifico(tableDict[startingPlayer]['dice'] === 1);
+        setPalifico(tableDictRef.current[startingPlayer]['dice'] === 1);
 
-        
+        console.log(startingPlayer);
+        console.log(player);
         // if the starting player is an AI, then we need to get moves from the backend
         if (startingPlayer !== player) {
             handleAIMove(startingPlayer);
@@ -318,8 +377,8 @@ const Play = () => {
 
         // TEST OUT THIS END GAME BEHAVIOR - MAKE SURE IT WORKS
         // see if the game is over
-        if (Object.keys(tableDict).length === 1) {
-            alert('Game over! The winner is:', Object.keys(tableDict)[0]);
+        if (Object.keys(tableDictRef.current).length === 1) {
+            alert('Game over! The winner is:', Object.keys(tableDictRef.current)[0]);
         }
         else {
             // figure out who's starting the next round
@@ -328,7 +387,7 @@ const Play = () => {
 
             let loser = roundLoserRef.current;
 
-            while (!(loser in tableDict)) {
+            while (!(loser in tableDictRef.current)) {
                 let index = table.indexOf(loser);
                 loser = table[(index + 1) % table.length];
             }
@@ -349,9 +408,9 @@ const Play = () => {
                 url: '/games/end_round/',
                 data: {
                     round_history: roundHistoryRef.current,
-                    table_dict: tableDict,
+                    table_dict: tableDictRef.current,
                     palifico: palifico,
-                    game_id: game
+                    game_id: gameID
                 }
             });
 
@@ -365,7 +424,7 @@ const Play = () => {
 
             // update the tableDict
             // remove 1 die from the loser
-            let tempTableDict = {...tableDict};
+            let tempTableDict = {...tableDictRef.current};
             tempTableDict[loser]['dice'] -= 1;
 
             // if the loser has one die left, then set ex-palifico to true
@@ -379,6 +438,7 @@ const Play = () => {
             }
 
             setTableDict(tempTableDict);
+            tableDictRef.current = tempTableDict;
 
 
         } catch (error) {
@@ -398,8 +458,8 @@ const Play = () => {
         console.log('dicePerPlayer:', dicePerPlayer);
         console.log('sidesPerDie:', sidesPerDie);
         console.log('setupComplete:', setupComplete);
-        console.log('game:', game);
-        console.log('tableDict:', tableDict);
+        console.log('gameID:', gameID);
+        console.log('tableDict:', tableDictRef.current);
         console.log('currentPlayer:', currentPlayer);
         console.log('lastPlayer:', lastPlayer);
         console.log('lastBid:', lastBid);
@@ -447,9 +507,9 @@ const Play = () => {
                             return (
                                 <div>
                                     <h3>(current) {tablePlayer}: </h3>
-                                    <h3>Your hand: {tableDict[tablePlayer]['hand']}</h3>
+                                    <h3>Your hand: {tableDictRef.current[tablePlayer]['hand']}</h3>
                                     <PlayerBid 
-                                    tableDict={tableDict}
+                                    tableDict={tableDictRef.current}
                                     sidesPerDie={sidesPerDie}
                                     palifico={palifico}
                                     roundHistory={roundHistory}

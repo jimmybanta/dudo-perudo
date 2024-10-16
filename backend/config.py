@@ -30,21 +30,44 @@ def set_value(name, decrypt=False, env=ENV):
     else:
         raise ValueError('Invalid environment.') """
     
+def set_llm_value(name, decrypt=False, env=ENV):
+    '''
+    Returns a value for the LLM API from the environment or parameter store.
 
-# use .env file for local development environment
-if ENV == 'DEV':
-    db_secrets = {
-        'username': os.getenv('DB_USER'),
-        'password': os.getenv('DB_PASSWORD')
-    }
+    Parameters
+    ----------
+    name : str
+        The name of the value to retrieve.
+    decrypt : bool
+        Whether to decrypt the value.
+    env : str
+        The environment to retrieve the value from.
+    '''
 
+    # get the llm provider
+    provider = set_value('LLM_PROVIDER', decrypt=decrypt, env=env)
+
+    # format the value name
+    return set_value(f'{provider}_{name}', decrypt=decrypt, env=env)
+    
 
 ## set configuration
 
+django = {
+    'secret_key': set_value('DJANGO_SECRET_KEY', decrypt=True),
+}
+
 database = {
     'name': set_value('DB_NAME', decrypt=True),
-    'user': db_secrets['username'],
-    'password': db_secrets['password'],
+    'user': set_value('DB_USER', decrypt=True),
+    'password': set_value('DB_PASSWORD', decrypt=True),
     'endpoint': set_value('DB_ENDPOINT', decrypt=True),
     'port': set_value('DB_PORT', decrypt=True)
+}
+
+llm = {
+    'provider': set_value('LLM_PROVIDER'),
+    'api_key': set_llm_value('API_KEY', decrypt=True),
+    'model': set_llm_value('MODEL'),
+    'prompts_path': set_value('PROMPTS_PATH', env='ALL'),
 }

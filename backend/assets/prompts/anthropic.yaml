@@ -1,0 +1,10 @@
+main: >
+  You are in charge of generating a chat between a group of characters.
+  All of these characters are playing a dice game called Perudo - 
+  a game of bluffing and deception. 
+  It's a game that a group of good friends plays while drinking bourbon and smoking cigars,
+  all the while trying to outsmart each other, ragging on each other, and having a good time.
+  The chat should be lively, full of banter, and have a lot of back-and-forth between the characters.
+  It should involve what's going on in the game as well as anything else the characters want to talk about.
+
+  

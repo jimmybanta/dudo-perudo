@@ -8,6 +8,7 @@ from rest_framework import viewsets
 
 import random
 import time
+import json
 
 from games.models import Game, Character
 from games.serializers import CharacterSerializer
@@ -15,6 +16,8 @@ from perudo.round import run_round
 import perudo.logic as logic
 
 from perudo.characters.characters import CHARACTERS
+
+from prompting import prompt
 
 
 
@@ -189,17 +192,69 @@ def end_round(request):
 def get_chat_messages(request):
     '''Generates chat messages for a game.'''
 
-    time.sleep(1)
-
     game_id = request.data['game_id']
+    player = request.data['player']
     table = request.data['table']
+    round_history = request.data['round_history']
+    message_history = request.data['message_history']
 
-    for player in table:
-        send_event(f'game-{game_id}', 'message', {
-            'writer': player,
-            'text': 'joined',
-            'delay': 1000
-            })
+    # context
+    ## either initialize_game - at the beginning of a game
+    ## or move - during a round
+    ## or user_message - when the user sends a message
+    context = request.data['context']
+    
+    # streaming responses
+    current_message = ''
+    sent_messages = 0
+    total_delay = 0
+    
+    for chunk in prompt(
+                    message_history=message_history,
+                    round_history=round_history,
+                    context=context,
+                    table=table,
+                    player=player,
+                    stream=True
+                ):
+        
+        # remove any newlines
+        chunk = chunk.replace('\n', '')
+        
+        current_message += chunk
+
+        # if we've reached the end of a message, send it
+        if '{' in current_message and '}' in current_message:
+
+            # get the message
+            start_point = current_message.index('{')
+            break_point = current_message.index('}') + 1
+            message_dict = json.loads(current_message[start_point:break_point])
+
+            # if it doesn't have a delay, then set it to 0
+            try:
+                message_delay = message_dict['delay']
+            except:
+                message_delay = 0
+
+            # if it's the first message, then send with no delay
+            if sent_messages == 0:
+                message_dict['delay'] = 0
+            # otherwise, add the total delay on
+            else:
+                message_dict['delay'] = message_delay + total_delay
+                
+            send_event(f'game-{game_id}', 'message', message_dict)
+        
+            current_message = current_message[break_point:]
+
+            # add the delay
+            total_delay += message_delay
+
+            sent_messages += 1
+
+    
+        
 
 
 

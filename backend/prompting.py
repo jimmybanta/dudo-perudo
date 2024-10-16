@@ -25,9 +25,12 @@ PROVIDER = config.llm['provider']
 PROMPTS = load_yaml(os.path.join(config.llm['prompts_path'], f'{config.llm["provider"].lower()}.yaml'))
 
 
-def prompt(message, 
-           characters=[], 
-           stream=True, 
+def prompt(message_history=[],
+           round_history=[],
+            context=None,
+            table=[], 
+            player=None,
+            stream=True, 
            ):
     ''' 
     Prompts the LLM API with a message.
@@ -38,8 +41,8 @@ def prompt(message,
         The message to prompt with. If a list, then it's a list of dictionaries
         with the writer and text of the message in each. 
         If it's a string, then it's just a message.
-    characters : list | []
-        The characters currently in the game.
+    table : list | []
+        The characters currently at the table.
     stream : bool | True
         Whether to stream the prompt.
     '''
@@ -48,9 +51,30 @@ def prompt(message,
     # the main prompt is always added to the system
     system_prompt = PROMPTS['main']
 
-    """ # add in character prompts
-    if characters:
-        system_prompt += PROMPTS[character] """
+    system_prompt += 'The following are the characters in the game: \n'
+
+    # add in character prompts
+    if table:
+        for character in table:
+            if character == player:
+                system_prompt += f'The user is {player}. Remember - you should never output a message by the user.\n'
+            else:
+                base_character = character.split('-')[0]
+                system_prompt += f'{character}: {PROMPTS[base_character]} \n'
+
+    # add in the context
+    if context == 'initialize_game':
+        prompt_messages = PROMPTS[context]
+    
+    elif context == 'move':
+
+        system_prompt += PROMPTS[context]
+        system_prompt += 'Here is the message history: \n'
+        prompt_messages = message_history
+
+    elif context == 'user_message':
+        pass
+    
     
     # if we're prompting from google
     if PROVIDER == 'GOOGLE':
@@ -96,14 +120,23 @@ def prompt(message,
         
         if stream:
             
-            return prompt_stream(model, data, generation_config)
+            return prompt_stream(model, prompt_messages, generation_config)
         
         else:
-            response = model.generate_content(data,
+            response = model.generate_content(prompt_messages,
                                             generation_config=generation_config,
-                                            stream=False)
+                                            stream=False,
+                                            safety_settings={
+                                                'HATE': 'BLOCK_NONE',
+                                                'HARASSMENT': 'BLOCK_NONE',
+                                                'SEXUAL' : 'BLOCK_NONE',
+                                                'DANGEROUS' : 'BLOCK_NONE'
+                                            })
             
-            return response.text
+            try:
+                return response.text
+            except:
+                input(response)
 
 
 
@@ -111,7 +144,13 @@ def prompt_stream(model, data, generation_config):
 
     for chunk in model.generate_content(data,
                                         generation_config=generation_config,
-                                        stream=True):
+                                        stream=True,
+                                        safety_settings={
+                                                'HATE': 'BLOCK_NONE',
+                                                'HARASSMENT': 'BLOCK_NONE',
+                                                'SEXUAL' : 'BLOCK_NONE',
+                                                'DANGEROUS' : 'BLOCK_NONE'
+                                            }):
         yield chunk.text
 
 

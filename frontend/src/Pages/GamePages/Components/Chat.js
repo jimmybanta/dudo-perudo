@@ -24,11 +24,13 @@ const reducer = (state, action) => {
     }
 };
 
-const Chat = ({ gameID, table }) => {
+const Chat = ({ gameID, player, table, roundHistory }) => {
     // a component for the chat
 
     // chat state
     const [state, dispatch] = useReducer(reducer, initialState);
+
+    const [userMessage, setUserMessage] = useState('');
 
 
 
@@ -47,7 +49,11 @@ const Chat = ({ gameID, table }) => {
                 url: `/games/get_chat_messages/`,
                 data: {
                     game_id: gameID,
-                    table: table
+                    player: player,
+                    table: table,
+                    context: 'initialize_game',
+                    round_history: roundHistory,
+                    message_history: state.history,
                 }
             });
 
@@ -132,6 +138,42 @@ const Chat = ({ gameID, table }) => {
     }, [gameID]);
 
 
+    // for when the roundHistory changes
+    // so a new move has been made, and we want to get comments on it
+    useEffect(() => {
+
+        if (roundHistory.length > 0) {
+
+            const loadMoveComments = async () => {
+
+                const [commentsSuccess, commentsResp] = await apiCall({
+                    method: 'post',
+                    url: `/games/get_chat_messages/`,
+                    data: {
+                        game_id: gameID,
+                        player: player,
+                        table: table,
+                        context: 'move',
+                        round_history: roundHistory,
+                        message_history: state.history,
+                    }
+                });
+
+                if (!commentsSuccess) {
+                    alert(commentsResp);
+                    return;
+                }
+
+            };
+
+            //loadMoveComments();
+            console.log(roundHistory);
+
+        }
+
+    }, [roundHistory]);
+
+
     // for when the chat queue changes
     useEffect(() => {
 
@@ -139,10 +181,15 @@ const Chat = ({ gameID, table }) => {
                 
             const chunk = state.queue[0];
 
-            setTimeout(() => {
-                dispatch({ type: 'popQueue' });
+            dispatch({ type: 'popQueue' });
 
-                dispatch({ type: 'updateHistory', payload: chunk });
+            setTimeout(() => {
+                
+                dispatch({ type: 'updateHistory', payload: {
+                    writer: chunk.writer,
+                    text: chunk.text,
+                } });
+
             }, chunk.delay);
         }
 
@@ -151,39 +198,38 @@ const Chat = ({ gameID, table }) => {
     // for when the chat history changes
     useEffect(() => {
 
-        if (state.history.length > 0) {
-            console.log('chat history:', state.history);
-        }
+        //console.log(state.history[state.history.length - 1]);
 
     }, [state.history]);
 
+    const renderHistory = () => {
+        return state.history.map((message, index) => {
+            return (
+                <div key={index}>
+                    <p>{message.writer}: {message.text}</p>
+                </div>
+            );
+        });
+    };
 
 
-    /* // for when the game is initialized
-    useEffect(() => {
+    return (
+        <div
+        style={{
+            height: '200px',
+            overflow: 'auto',
+        }}>
+            {renderHistory()}
+            <input
+                type="text"
+                value={userMessage}
+                onChange={(e) => {
+                    setUserMessage(e.target.value);
+                }}
+            />
 
-        const loadInitialChat = async () => {
-
-            const [chatSuccess, chatResp] = await apiCall({
-                method: 'post',
-                url: `/games/get_chat_messages/`,
-                data: {
-                    game_id: gameID,
-                    table: table
-                }
-            });
-
-            if (!chatSuccess) {
-                alert(chatResp);
-                return;
-            }
-
-        };
-
-        loadInitialChat();
-
-    },[gameID]);
- */
+        </div>
+    )
 };
 
 export default Chat;

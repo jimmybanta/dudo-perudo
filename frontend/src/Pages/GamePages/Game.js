@@ -16,7 +16,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
     const [tableDict, setTableDict] = useState(playTableDict); // dictionary of players with dice, hands, ex-palifico
     
     const [currentPlayer, setCurrentPlayer] = useState(playCurrentPlayer); // the current player
-    const [currentBid, setCurrentBid] = useState(null); // the current bid
 
     const [gameHistory, setGameHistory] = useState([]); // the history of the game
     const [roundHistory, setRoundHistory] = useState([]); // the history of the round
@@ -288,7 +287,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         // then, reset the round state
         setRoundHistory([]);
         setCurrentPlayer(null);
-        setCurrentBid(null);
         setRoundLoser(null);
         setRoundTotal(null);
 
@@ -333,22 +331,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                 />
                             </div>
                         )
-                    } else if (currentBid) {
-                        if (currentBid === 'call') {
-                            return (
-                                <div>
-                                    <h3>(current) {tablePlayer}: {currentBid} </h3>
-                                </div>
-                            )
-                        }
-                        else {
-                            return (
-                                <div>
-                                    <h3>(current) {tablePlayer}: ({currentBid[0]}, {currentBid[1]}) </h3>
-                                </div>
-                            )
-                        }
-                        
                     }
                     else {
                         return (
@@ -358,14 +340,17 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                         )
             
                     }
-                    
-                 // if tablePlayer is before currentPlayer, then also display their move
-                } else if (tablePlayer === getLastPlayerBid()[0]) {
+
+
+
+                }
+                // if tablePlayer is before currentPlayer, then also display their move
+                else if (tablePlayer === getLastPlayerBid()[0]) {
                     return (
                         <div>
                             <h3>{tablePlayer}: &nbsp;
-                                {getLastPlayerBid()[1][0]},
-                                {getLastPlayerBid()[1][1]} </h3>
+                                ({getLastPlayerBid()[1][0]},
+                                {getLastPlayerBid()[1][1]}) </h3>
                         </div>
                     )
 
@@ -434,7 +419,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 )}
                     
 
-                <Button onClick={() => test()}>test</Button>
 
                 <div>
                     <h3>palifico: {palifico ? 'true' : 'false'}</h3>
@@ -444,7 +428,9 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
                 <Chat 
                 gameID={gameID}
+                player={player}
                 table={table}
+                roundHistory={roundHistory}
                 />
 
             </div>

@@ -25,7 +25,15 @@ def load_yaml(file):
         data = yaml.load(f, Loader=yaml.FullLoader)
     return data
 
+def format_message_history(message_history):
 
+    final_str = ''
+
+    for message in message_history:
+
+        final_str += f'[{message["writer"]}]: {message["text"]}\n'
+    
+    return final_str
 
 """ def add_info_to_initialization_prompt(theme, timeframe, details, prompt=''):
     ''' 

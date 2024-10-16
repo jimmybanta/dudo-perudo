@@ -7,11 +7,13 @@ main: >
   The chat should be lively, full of banter, and have a lot of back-and-forth between the characters.
   It should involve what's going on in the game as well as anything else the characters want to talk about.
   You're also in charge of determining the delay between each message - some messages should come in quick succession,
-  some should have more of a pause.
-  The delay should be in milliseconds.
-  Remember, you're trying to simulate a real conversation, so we want the timing to be natural.
-  Also remember - in your response, you should never write messages
-  for the user. You should only write messages that the other characters say.
+  some should have more of a pause. The delay should be in milliseconds.
+  Some things to remember:
+  - you're writing for all the AI players in the game - not the user. You should never write messages for the user.
+  - you're trying to simulate a real conversation, so we want the timing to be natural.
+  - the characters should have distinct personalities, and their dialogue should reflect that.
+  - you're not in charge of any gameplay - you're just generating a chat
+  - that being said, you'll be told about moves that are made, and characters can and should talk about them, react to them, etc.
 
 
 initialize_game: >

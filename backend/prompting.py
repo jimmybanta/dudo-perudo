@@ -9,7 +9,7 @@ import google.generativeai as genai
 
 import config
 
-from games.utils import load_yaml
+from games.utils import load_yaml, format_message_history
 
 
 logger = logging.getLogger(__name__)
@@ -27,10 +27,12 @@ PROMPTS = load_yaml(os.path.join(config.llm['prompts_path'], f'{config.llm["prov
 
 def prompt(message_history=[],
            round_history=[],
+           user_message='',
             context=None,
             table=[], 
             player=None,
             stream=True, 
+            starting_player=None,
            ):
     ''' 
     Prompts the LLM API with a message.
@@ -62,20 +64,33 @@ def prompt(message_history=[],
                 base_character = character.split('-')[0]
                 system_prompt += f'{character}: {PROMPTS[base_character]} \n'
 
+    main_message = ''
+
     # add in the context
     if context == 'initialize_game':
-        prompt_messages = PROMPTS[context]
+        main_message = PROMPTS['initialize_game']
+        main_message += f'The starting player is: {starting_player}'
     
     elif context == 'move':
 
-        system_prompt += PROMPTS[context]
-        system_prompt += 'Here is the message history: \n'
-        prompt_messages = message_history
+        move_player = round_history[-1][0]
+        move = round_history[-1][1]
+        if move != 'call':
+            move = f'{move[0]} {move[1]}s'
 
+        main_message += 'Here is the message history thus far in the game: \n'
+        main_message += format_message_history(message_history)
+
+        main_message += PROMPTS['move']
+        main_message += f'{move_player} made the following move: {move}'
+        
     elif context == 'user_message':
-        pass
-    
-    
+        main_message += 'Here is the message history thus far in the game: \n'
+        main_message += format_message_history(message_history)
+
+        main_message += PROMPTS['user_message']
+        main_message += f'Here is the message: "{user_message}"'
+        
     # if we're prompting from google
     if PROVIDER == 'GOOGLE':
 
@@ -120,10 +135,10 @@ def prompt(message_history=[],
         
         if stream:
             
-            return prompt_stream(model, prompt_messages, generation_config)
+            return prompt_stream(model, main_message, generation_config)
         
         else:
-            response = model.generate_content(prompt_messages,
+            response = model.generate_content(main_message,
                                             generation_config=generation_config,
                                             stream=False,
                                             safety_settings={

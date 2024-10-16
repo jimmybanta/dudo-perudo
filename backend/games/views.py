@@ -131,7 +131,7 @@ def get_move(request):
 
     ## to do - add pausing/thinking time logic
     # time in milliseconds
-    pause = 500
+    pause = 3000
     
     return JsonResponse({'move': move, 'pause': pause})
     
@@ -197,12 +197,18 @@ def get_chat_messages(request):
     table = request.data['table']
     round_history = request.data['round_history']
     message_history = request.data['message_history']
+    starting_player = request.data['current_player'] 
+    user_message = request.data['user_message']
 
     # context
-    ## either initialize_game - at the beginning of a game
-    ## or move - during a round
-    ## or user_message - when the user sends a message
+    ## either: 
+    ##      initialize_game - at the beginning of a game
+    ##      move - during a round
+    ##      user_message - when the user sends a message
     context = request.data['context']
+
+    if context == 'intialize_game':
+        pass
     
     # streaming responses
     current_message = ''
@@ -210,12 +216,14 @@ def get_chat_messages(request):
     total_delay = 0
     
     for chunk in prompt(
+                    context=context,
                     message_history=message_history,
                     round_history=round_history,
-                    context=context,
+                    user_message=user_message,
                     table=table,
                     player=player,
-                    stream=True
+                    stream=True,
+                    starting_player=starting_player
                 ):
         
         # remove any newlines

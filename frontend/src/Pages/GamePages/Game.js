@@ -430,6 +430,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 gameID={gameID}
                 player={player}
                 table={table}
+                currentPlayer={currentPlayer}
                 roundHistory={roundHistory}
                 />
 

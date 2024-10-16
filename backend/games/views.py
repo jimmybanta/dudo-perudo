@@ -7,6 +7,7 @@ from django_eventstream import send_event
 from rest_framework import viewsets
 
 import random
+import time
 
 from games.models import Game, Character
 from games.serializers import CharacterSerializer
@@ -75,10 +76,6 @@ def legal_bids(request):
     round_history = request.data['round_history']
     current_player = request.data['current_player']
 
-    print('round history:', round_history)
-    print('palifico:', palifico)
-    print(table_dict)
-
     # get total num of dice
     try:
         total_dice = sum([int(table_dict[player]['dice']) for player in table_dict])
@@ -113,8 +110,6 @@ def get_move(request):
     round_history = request.data['round_history']
     table_dict = request.data['table_dict']
     palifico = request.data['palifico']
-
-    print('current player:', current_player)
 
     # note - could be used later, if we want to incorporate game history into AI moves
     game_history = request.data['game_history']
@@ -194,6 +189,17 @@ def end_round(request):
 def get_chat_messages(request):
     '''Generates chat messages for a game.'''
 
+    time.sleep(1)
+
+    game_id = request.data['game_id']
+    table = request.data['table']
+
+    for player in table:
+        send_event(f'game-{game_id}', 'message', {
+            'writer': player,
+            'text': 'joined',
+            'delay': 1000
+            })
 
 
 

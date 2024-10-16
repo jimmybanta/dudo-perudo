@@ -20,8 +20,8 @@ urlpatterns = [
 
     path('initialize_game/', views.initialize_game),
     path('legal_bids/', views.legal_bids),
-    path('make_bid/', views.make_bid),
     path('end_round/', views.end_round),
     
     path('get_move/', views.get_move),
+    path('get_chat_messages/', views.get_chat_messages),
 ]

@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect, } from 'react';
 import axios from 'axios';
 import { Button } from 'reactstrap';
 
-import PlayerBid from '../GamePages/Components/PlayerBid';
+import PlayerBid from './Components/PlayerBid';
+import Chat from './Components/Chat';
 
 import { apiCall } from '../../api';
 import { rollDice, sleep } from '../../utils'; 
@@ -277,7 +278,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         };
 
         // if it's not, then continue onto next round
-        
+
         // need to roll hands for everyone
         for (const player in tempTableDict) {
             tempTableDict[player]['hand'] = rollDice(tempTableDict[player]['dice'], sidesPerDie);
@@ -440,6 +441,11 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 </div>
 
                 { renderHands() }
+
+                <Chat 
+                gameID={gameID}
+                table={table}
+                />
 
             </div>
     )

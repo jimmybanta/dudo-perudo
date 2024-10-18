@@ -17,7 +17,7 @@ urlpatterns = [
     path('stream/<game_id>/', include(django_eventstream.urls), 
          {'format-channels': ['game-{game_id}']}),
 
-
+    path('get_current_version/', views.get_current_version),
     path('initialize_game/', views.initialize_game),
     path('legal_bids/', views.legal_bids),
     path('end_round/', views.end_round),

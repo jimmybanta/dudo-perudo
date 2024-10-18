@@ -1,10 +1,9 @@
 import './App.css';
 import { React, useState } from 'react';
 
-import Instructions from './Pages/Instructions';
 import Home from './Pages/Home';
 import Play from './Pages/Play';
-import Settings from './Pages/Settings';
+import About from './Pages/About';
 
 function App() {
 
@@ -29,10 +28,10 @@ function App() {
         />}
         {currentPage === 'Play' &&
           <Play />}
-        {currentPage === 'Instructions' && 
-          <Instructions />}
-        {currentPage === 'Settings' &&
-          <Settings />}
+        {currentPage === 'About' && 
+          <About 
+          onSetCurrentPage={(page) => setCurrentPage(page)}
+          />}
 
       </div>        
       

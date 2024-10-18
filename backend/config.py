@@ -71,3 +71,9 @@ llm = {
     'model': set_llm_value('MODEL'),
     'prompts_path': set_value('PROMPTS_PATH', env='ALL'),
 }
+
+# get the current version
+with open('current_version.json') as f:
+    current_version = json.load(f)['version']
+
+game_version = current_version

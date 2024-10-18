@@ -6,6 +6,7 @@ from django_eventstream import send_event
 
 from rest_framework import viewsets
 
+import config
 import random
 import time
 import json
@@ -28,6 +29,14 @@ class CharacterViewSet(viewsets.ModelViewSet):
     queryset = Character.objects.all()    
     serializer_class = CharacterSerializer
 
+@csrf_exempt
+@api_view(['GET'])
+def get_current_version(request):
+    '''
+    Returns the current version of the game.
+    '''
+
+    return JsonResponse({'version': config.game_version})
 
 
 @api_view(['POST'])

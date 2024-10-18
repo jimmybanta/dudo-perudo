@@ -13,17 +13,28 @@ function App() {
 
   return (
     <div className="App">
+      <div
+        className='container flex-column main-app-container'
+        style={{
+          minWidth: '100%',
+          minHeight: '100%',
+          overflow: 'auto',
+          border: '1px solid white'
+        }}
+      >
 
-    {currentPage === 'Home' && 
-    <Home
-    onSetCurrentPage={(page) => setCurrentPage(page)}
-     />}
-    {currentPage === 'Play' &&
-      <Play />}
-    {currentPage === 'Instructions' && 
-      <Instructions />}
-    {currentPage === 'Settings' &&
-      <Settings />}
+        {currentPage === 'Home' && 
+        <Home
+        onSetCurrentPage={(page) => setCurrentPage(page)}
+        />}
+        {currentPage === 'Play' &&
+          <Play />}
+        {currentPage === 'Instructions' && 
+          <Instructions />}
+        {currentPage === 'Settings' &&
+          <Settings />}
+
+      </div>        
       
     </div>
 

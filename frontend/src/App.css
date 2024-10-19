@@ -122,6 +122,14 @@ html, body {
   margin-bottom: 3%;
 }
 
+.about-link {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.about-link:hover {
+  color: var(--link-hover-color);
+}
 
 
 /* buttons */

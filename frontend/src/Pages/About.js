@@ -95,7 +95,7 @@ const About = ({ onSetCurrentPage }) => {
                 )}
 
                 <div className='button home-button text' onClick={() => onSetCurrentPage('Home')}>
-                    Back
+                    back
                 </div>
             </div>
         </div>

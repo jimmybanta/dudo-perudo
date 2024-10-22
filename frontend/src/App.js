@@ -15,10 +15,10 @@ function App() {
       <div
         className='container flex-column main-app-container'
         style={{
-          minWidth: '100%',
-          minHeight: '100%',
+          height: '100vh',
+          width: '100vw',
           overflow: 'auto',
-          border: '1px solid white'
+          //border: '1px solid white'
         }}
       >
 

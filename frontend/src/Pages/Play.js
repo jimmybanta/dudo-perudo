@@ -168,7 +168,7 @@ const Play = ({ onSetCurrentPage }) => {
                     }
                 />
                 <div 
-                className='button home-button text' 
+                className='button home-button text back-button' 
                 style={{
                     marginTop: '50px',
                 }}

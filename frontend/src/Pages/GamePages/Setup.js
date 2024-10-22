@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Input, Button } from 'reactstrap';
 import { BASE_URL } from '../../interceptors';
@@ -41,8 +41,6 @@ const Setup = ({ onSave }) => {
                 alert(charactersResp.data);
                 return;
             }
-
-            console.log(charactersResp);
 
             setCharacters(charactersResp);
         };
@@ -90,6 +88,48 @@ const Setup = ({ onSave }) => {
         setTable(newTable);
     };
 
+    const handleRemoveTablePlayer = (name) => {
+
+
+        // can't delete the human
+        if (name === player) {
+            return;
+        };
+
+        // first, remove the player from the table
+        let newTable = [...table];
+        newTable = newTable.filter(player => player !== name);
+
+
+        let finalTable = [];
+
+        // then go through and add the players, keeping numbers correct
+        newTable.forEach(player => {
+
+            let baseName = player.split('-')[0];
+
+            let newName = baseName;
+
+            let i = 2;
+
+            while (finalTable.includes(newName)) {
+                newName = baseName + '-' + i;
+
+                i += 1;
+            }
+
+            finalTable.push(newName);
+        });
+
+
+        setTable(finalTable);
+    };
+
+    const handleSave = () => {
+        onSave(player, dicePerPlayer, sidesPerDie, table);
+    }
+
+
     return (
         <div
         className='container flex-column'
@@ -122,54 +162,118 @@ const Setup = ({ onSave }) => {
                 className='container flex-column'
                 style={{
                     width: '80%',
+                    height: '100%',
+                    //border: '1px solid blue',
                 }}>
-                    <h1 className='text setup-input-header'>craft your table, {player}</h1>
-
-                    <div className='container flex-row'
+                    <div 
+                    className='text setup-input-header'
                     style={{
-                        width: '100%',
-                        height: '300px',
+                        marginBottom: '40px',
+                    }}
+                    >craft your table, {player}</div>
+
+                    <div className='container flex-row setup-char-table-container'
+                    style={{
+                        //border: '1px solid red'
                     }}
                     >
 
-                        <div className='container flex-column setup-char-table' style={{ 
+
+                        <div 
+                        className='setup-char-table' 
+                        style={{ 
+                            //border: '1px solid white',
+                            width: '60%',
                             
-                            border: '1px solid white'
                              }}>
                                 <div className='setup-header'>Characters</div>
+
                                 {characters.map((character) => (
-                                <div key={character.id}>
-                                    <div className='container flex-row setup-char' 
+
+                                    <div 
+                                    key={character.id}
+                                    className='container flex-row setup-char character-press' 
+                                    style={{
+                                        width: '100%',
+                                        //border: '1px solid white',
+                                        margin: 'auto'
+                                    }}
                                     onClick={() => handleSetTablePlayers(character.name)}>
+
                                         <div
                                         className='setup-char-name'
+                                        style={{width: '25%',
+                                            textAlign: 'left',
+                                        }}
                                         >{character.name}</div>
+
                                         <div
+                                        style={{width: '75%',
+                                            textAlign: 'left',
+                                        }}
                                         className='setup-char-description'
                                         >{character.description}</div>
+
                                     </div>
-                                </div>
                             ))}
+                            
 
                         </div>
 
-                        <div className='container flex-column setup-char-table' 
+                        <div className='setup-char-table' 
                         style={{ 
+                            //border: '1px solid white',
+                            alignItems: 'flex-start',
+                            width: '40%',
                              }}>
+
                                 <div className='setup-header'>Table</div>
+
                                 {table.map((player, i) => (
-                                    <div className='col-4' key={i}>
-                                        <div>
-                                            <p>{i + 1}: {player}</p>
-                                        </div>
+
+                                    <div 
+                                    key={i}
+                                    className='container flex-row setup-char table-press'  
+                                    style={{
+                                        width: '100%',
+                                        //border: '1px solid white',
+                                    }}
+                                    onClick={() => handleRemoveTablePlayer(player)}
+                                    >
+
+                                        <div
+                                        className='setup-char-name'
+                                        style={{width: '10%',
+                                            textAlign: 'left',
+                                        }}
+                                        >{i + 1}</div>
+
+                                        <div
+                                        style={{width: '90%',
+                                            textAlign: 'left',
+                                        }}
+                                        className='setup-char-description'
+                                        >{player}</div>
+
                                     </div>
+
                                 ))}
 
                         </div>
 
                     </div>
 
-                    <div className='container flex-row'
+                    <div 
+                    className='button home-button text lets-play-button' 
+                    style={{
+                        marginTop: '50px',
+                    }}
+                    onClick={() => handleSave()}
+                    >
+                        let's play
+                    </div>
+
+                    {/* <div className='container flex-row'
                     style={{
                         width: '100%',
 
@@ -203,15 +307,15 @@ const Setup = ({ onSave }) => {
 
                         </div>
 
-                    </div>
+                    </div> */}
                     
-                    <div className='container'>
+                    {/* <div className='container'>
                         <Button
                             onClick={() => onSave(player, dicePerPlayer, sidesPerDie, table)}
                         >
                             Let's play some fuckin perudo!
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
         )}
         </div>

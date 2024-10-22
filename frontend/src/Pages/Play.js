@@ -14,11 +14,11 @@ axios.defaults.baseURL = BASE_URL;
 
 
 
-const Play = () => {
+const Play = ({ onSetCurrentPage }) => {
 
     // temp setup
 
-    const [dicePerPlayer, setDicePerPlayer] = useState(2);
+    /* const [dicePerPlayer, setDicePerPlayer] = useState(2);
 
     const [player, setPlayer] = useState('crespin');
     const [gameID, setGameID] = useState(59);
@@ -34,10 +34,10 @@ const Play = () => {
     const [currentPlayer, setCurrentPlayer] = useState('crespin');
     const [sidesPerDie, setSidesPerDie] = useState(6);
 
-    const [setupComplete, setSetupComplete] = useState(true);
+    const [setupComplete, setSetupComplete] = useState(true); */
 
 
-    /* //// Setup variables
+    //// Setup variables
 
     const [player, setPlayer] = useState(null); // the player's name
     const [table, setTable] = useState([]); // the table of players
@@ -56,7 +56,7 @@ const Play = () => {
     const [tableDict, setTableDict] = useState({});
 
     // currentPlayer is the player whose turn it is
-    const [currentPlayer, setCurrentPlayer] = useState(null); */
+    const [currentPlayer, setCurrentPlayer] = useState(null);
      
 
     //// round variables - specific to a round
@@ -142,11 +142,21 @@ const Play = () => {
     
 
     return (
-        <div>
-            <h1>Play</h1>
+        <div
+        className='container flex-column'
+        style={{
+            width: '100%',
+            height: '100%',
+        }}>
 
             {/* First, setup the game */}
             {!setupComplete && (
+                <div
+                className='container flex-column'
+                style={{
+                    width: '100%',
+                    height: '100%',
+                }}>
                 <Setup
                     onSave={(player, dicePerPlayer, sidesPerDie, table) => {
                         setPlayer(player);
@@ -157,6 +167,15 @@ const Play = () => {
                     }
                     }
                 />
+                <div 
+                className='button home-button text' 
+                style={{
+                    marginTop: '50px',
+                }}
+                onClick={() => onSetCurrentPage('Home')}>
+                    back
+                </div>
+                </div>
             )}
 
             {/* Then, play the game */}

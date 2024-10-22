@@ -24,6 +24,8 @@ const Setup = ({ onSave }) => {
 
     const [characters, setCharacters] = useState([]); // the characters to choose from
 
+    const [stage, setStage] = useState('player'); // the stage of the setup
+
 
     // get the characters
     useEffect(() => {
@@ -39,6 +41,8 @@ const Setup = ({ onSave }) => {
                 alert(charactersResp.data);
                 return;
             }
+
+            console.log(charactersResp);
 
             setCharacters(charactersResp);
         };
@@ -87,65 +91,72 @@ const Setup = ({ onSave }) => {
     };
 
     return (
-        <div>
+        <div
+        className='container flex-column'
+        style={{
+            width: '100%',
+            height: '100%',
+        }}>
             {/* First, get the player's name */}
-            {player === null && (
-                <div>
-                    <Input
+            {stage === 'player' && (
+                <div className='container flex-column' style={{ width: '75%', margin: '3%' }}>
+                    <h1 className='text setup-input-header'>what's your name?</h1>
+                    <input
+                        className='setup-input'
                         type='text'
-                        placeholder='enter your name'
-                        onKeyPress={(e) => {
+                        placeholder=''
+                        value={player}
+                        onChange={(e) => setPlayer(e.target.value)}
+                        onKeyDown={(e) => {
                             if (e.key === 'Enter') {
-                                setPlayer(e.target.value);
-                                setTable([e.target.value]);
-                            }
-                        }}
+                                setTable([player]);
+                                setStage('table');
+                            }}}
                     />
                 </div>
             )}
 
             {/* Then, welcome the player and set up the table */}
-            {player !== null && (
-                <div>
-                    <h2>Welcome, {player}!</h2>
-                    <div className='container'>
-                        <h3>Dice per player:</h3>
-                        <Input
-                            type='number'
-                            value={dicePerPlayer}
-                            onChange={(e) => {
-                                setDicePerPlayer(e.target.value);
-                            }}
-                        />
-                        
-                    </div>
-                    <div className='container'>
-                        <h3>Sides per die:</h3>
-                        <Input
-                            type='number'
-                            value={sidesPerDie}
-                            onChange={(e) => {
-                                setSidesPerDie(e.target.value);
-                            }}
-                        />
-                    </div>
-                    <h2>Craft your table</h2>
-                    <div className='container'>
-                        <div className='row'>
-                            {characters.map((character) => (
-                                <div className='col-4' key={character.id}>
-                                    <Button
-                                        onClick={() => {
-                                            handleSetTablePlayers(character.name);
-                                        }}
-                                    >
-                                        {character.name}
-                                    </Button>
+            {stage === 'table' && (
+                <div
+                className='container flex-column'
+                style={{
+                    width: '80%',
+                }}>
+                    <h1 className='text setup-input-header'>craft your table, {player}</h1>
+
+                    <div className='container flex-row'
+                    style={{
+                        width: '100%',
+                        height: '300px',
+                    }}
+                    >
+
+                        <div className='container flex-column setup-char-table' style={{ 
+                            
+                            border: '1px solid white'
+                             }}>
+                                <div className='setup-header'>Characters</div>
+                                {characters.map((character) => (
+                                <div key={character.id}>
+                                    <div className='container flex-row setup-char' 
+                                    onClick={() => handleSetTablePlayers(character.name)}>
+                                        <div
+                                        className='setup-char-name'
+                                        >{character.name}</div>
+                                        <div
+                                        className='setup-char-description'
+                                        >{character.description}</div>
+                                    </div>
                                 </div>
                             ))}
+
                         </div>
-                        <div className='row'>
-                            <h2>Table:</h2>
+
+                        <div className='container flex-column setup-char-table' 
+                        style={{ 
+                             }}>
+                                <div className='setup-header'>Table</div>
                                 {table.map((player, i) => (
                                     <div className='col-4' key={i}>
                                         <div>
@@ -153,14 +164,53 @@ const Setup = ({ onSave }) => {
                                         </div>
                                     </div>
                                 ))}
+
                         </div>
-                        <div className='row'>
-                                <Button
-                                    onClick={() => onSave(player, dicePerPlayer, sidesPerDie, table)}
-                                >
-                                    Let's play some fuckin perudo!
-                                </Button>
+
+                    </div>
+
+                    <div className='container flex-row'
+                    style={{
+                        width: '100%',
+
+                    }}
+                    >
+
+                        <div className='container flex-column' style={{ 
+                            width: '50%',
+                             }}>
+                                <h3>Dice per player:</h3>
+                        <Input
+                            type='number'
+                            value={dicePerPlayer}
+                            onChange={(e) => {
+                                setDicePerPlayer(e.target.value);
+                            }}
+                        />
+
                         </div>
+
+                        <div className='container flex-column' style={{ 
+                            width: '50%' }}>
+                                <h3>Sides per die:</h3>
+                        <Input
+                            type='number'
+                            value={sidesPerDie}
+                            onChange={(e) => {
+                                setSidesPerDie(e.target.value);
+                            }}
+                        />
+
+                        </div>
+
+                    </div>
+                    
+                    <div className='container'>
+                        <Button
+                            onClick={() => onSave(player, dicePerPlayer, sidesPerDie, table)}
+                        >
+                            Let's play some fuckin perudo!
+                        </Button>
                     </div>
                 </div>
         )}

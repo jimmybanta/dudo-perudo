@@ -27,7 +27,8 @@ function App() {
         onSetCurrentPage={(page) => setCurrentPage(page)}
         />}
         {currentPage === 'Play' &&
-          <Play />}
+          <Play 
+          onSetCurrentPage={(page) => setCurrentPage(page)}/>}
         {currentPage === 'About' && 
           <About 
           onSetCurrentPage={(page) => setCurrentPage(page)}

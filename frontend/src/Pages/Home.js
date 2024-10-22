@@ -7,51 +7,54 @@ import { Button } from 'reactstrap';
 const Home = ({ onSetCurrentPage }) => {
 
     return (
-        <div
-        className='container flex-column'
-        style={{
-          gap: '30px',
-        }}>
-          <div 
-          className='text main-title gradient-text all-caps'
-          style={{marginBottom: '20%'}}
+      <div
+      className='container flex-column'
+      style={{
+        position: 'relative',
+        gap: '30px',
+        width: '100%',
+        height: '100%',
+      }}>
+
+        <div 
+          className='text main-title all-caps'
+          style={{
+          }}
           >
-            Dudo Perudo
-          </div>
+          Dudo Perudo
+        </div>
+
+        <div className='container flex-column'
+        style={{
+          position: 'relative',
+        }} >
+
+          <img 
+          className='home-table'
+          src='assets/table.png' 
+          alt='table' 
+          />
+
           <div 
           className='text button home-button home-play-button'
           onClick={() => onSetCurrentPage('Play')}
           >
-            <span className='gradient-text home-play'>let's play!</span>
+          <span className=''>let's play!</span>
           </div>
+
           <div 
           className='text button home-button home-about-button'
           onClick={() => onSetCurrentPage('About')}
           >
-            <span className='gradient-text home-about'>about</span>
+          <span className=''>about</span>
           </div>
 
 
 
-
-{/*           <div className='container'>
-          <Button
-          onClick={() => onSetCurrentPage('Play')}>
-            Play
-          </Button>
-          </div>
-          <div className='container'>
-          <Button
-          onClick={() => onSetCurrentPage('Instructions')}>
-            Instructions
-          </Button>
         </div>
-        <div className='container'>
-          <Button
-          onClick={() => onSetCurrentPage('Settings')}>
-            Settings
-          </Button>
-        </div> */}
+        
+        
+        
     </div>
     )
     }

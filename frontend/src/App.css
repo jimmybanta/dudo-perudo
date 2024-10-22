@@ -37,7 +37,7 @@ html, body {
   background-color: var(--background-color);
   color: var(--text-color);
   text-align: center;
-  font-family: 'Barriecito', sans-serif;
+  font-family: 'IM Fell DW Pica', sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
@@ -71,18 +71,29 @@ html, body {
   justify-content: center;
 }
 
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
 
 /* text */
 
+.text {
+  font-family: 'IM Fell DW Pica', sans-serif;
+}
+
 .all-caps {
-  font-family: 'Barrio', sans-serif;
+  font-family: 'IM Fell DW Pica SC', sans-serif;
 }
 
 .main-title {
   font-size: calc(3em + 3vw);
   user-select: none;
-  background: linear-gradient(45deg, #ff6b6b, #f06595, #cc5de8, #845ef7, #5c7cfa, #339af0, #22b8cf, #20c997, #51cf66, #94d82d, #fcc419, #ff922b);
-}
+/*   background: linear-gradient(45deg, #ff6b6b, #f06595, #cc5de8, #845ef7, #5c7cfa, #339af0, #22b8cf, #20c997, #51cf66, #94d82d, #fcc419, #ff922b);
+ */}
 
 .home-play {
   font-size: calc(1em + 1vw);
@@ -103,6 +114,7 @@ html, body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent;
 }
 
 .about-text {
@@ -143,11 +155,18 @@ html, body {
 }
 
 .home-button {
-  background-color: var(--background-color);
-  font-size: calc(2rem + 2vw); /* Relative font size */
+  background-color: none;
+  font-size: calc(3rem + 3vw);
   transition: all 0.5s ease;
   border-radius: 500px;
   padding: 10px 30px;
+  text-shadow: 5px 5px 1px rgba(47, 47, 47, 1);
+}
+
+@media (max-width: 768px) {
+  .home-button {
+    font-size: calc(2.5rem + 2vw);
+  }
 }
 
 .home-button:hover {
@@ -156,4 +175,99 @@ html, body {
 
 .home-button:active {
   transform: translateY(0%);
+}
+
+.home-play-button {
+  position: absolute;
+  top: 35%;
+}
+
+.home-about-button {
+  position: absolute;
+  top: 60%;
+}
+
+@media (max-width: 768px) {
+  .home-play-button {
+    top: 30%;
+  }
+
+  .home-about-button {
+    top: 60%;
+  }
+}
+
+/* setup input */
+.setup-input {
+  background-color: var(--background-color);
+  border: none; /* Remove default borders */
+  color: var(--text-color); /* Set text color */
+  border-bottom: 2px solid var(--text-color); /* Add a line below */
+  padding: 5px 0; /* Add some padding */
+  outline: none; /* Remove default outline */
+  width: 30%; /* Full width */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  font-size: calc(2rem + .5vw); /* Relative font size */
+  text-align: center;
+  font-family: 'IM Fell DW Pica', sans-serif;
+}
+
+.setup-input::placeholder {
+  color: var(--text-color); /* Set placeholder color */
+  opacity: 0.5; /* Make placeholder slightly transparent */
+}
+
+.setup-input:focus {
+  border-bottom-color: var(--text-color); /* Keep the line color on focus */
+  animation: blink-cursor 1s step-end infinite; /* Blinking cursor */
+}
+
+.setup-input-header {
+  font-size: calc(2rem + 1.5vw); /* Relative font size */
+  user-select: none;
+}
+
+/* setup */
+
+.setup-char-table {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  position: relative;
+  align-items: start;
+  padding: 20px;
+}
+
+.setup-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
+}
+
+.setup-char {
+  cursor: pointer;
+  gap: 20px;
+  padding: 10px;
+  border: 1px solid white;
+}
+
+.setup-char-name {
+  font-size: calc(1rem + 0.5vw); /* Relative font size */
+}
+
+/* images */
+
+.home-table {
+  width: 75%;
+  opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+  .home-table {
+    width: 100%;
+  }
 }

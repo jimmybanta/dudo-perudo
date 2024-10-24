@@ -36,14 +36,15 @@ const About = ({ onSetCurrentPage }) => {
                 width: '100%',
                 paddingLeft: '5%',
                 paddingRight: '5%',
+                //border: '1px solid white',
             }}
         >
             <div
                 className='container flex-column'
                 style={{
                     width: '100%',
-                    height: '30%',
-                    marginBottom: '3%',
+                    marginBottom: '10%',
+                    //border: '1px solid white',
                 }}
             >
                 <div className='text about-header all-caps'>About</div>

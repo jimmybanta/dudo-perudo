@@ -305,38 +305,112 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
     };
 
+    const formatMove = (move) => {
+
+        if (move === 'call') {
+            return 'lift!';
+        }
+
+        const [quantity, value] = move;
+
+        const valueDict = {
+            1: palifico ? 'ones' : 'jessies',
+            2: 'twos',
+            3: 'threes',
+            4: 'fours',
+            5: 'fives',
+            6: 'sixes'
+        }
+
+        return `${quantity} ${valueDict[value]}`;
+    };
     
     
     // renders the table
     const renderTable = () => {
 
+        // inner will hold the cups/hands
+        // middle will hold the player names
+        // outer will hold the player moves/thinking
+        const radius = 300;
+        const innerRadius = radius * 0.7;
+        const outerRadius = radius * 1.3;
+        
+        const angleStep = (2 * Math.PI) / table.length;
+        
+
         return (
-            table.map((tablePlayer) => {
+            table.map((tablePlayer, index) => {
+
+                let angle = angleStep * index + (Math.PI / 2);
+                const x = radius + (radius * Math.cos(angle));
+                const y = radius + (radius * Math.sin(angle));
+
+                const innerX = radius + (innerRadius * Math.cos(angle));
+                const innerY = radius + (innerRadius * Math.sin(angle));
+
+                const outerX = radius + (outerRadius * Math.cos(angle));
+                const outerY = radius + (outerRadius * Math.sin(angle));
 
                 {if (tablePlayer === currentPlayer) {
                     if (tablePlayer === player) {
                         return (
                             <div>
-                                <h3>(current) {tablePlayer}: </h3>
-                                <h3>Your hand: {tableDict[tablePlayer]['hand']}</h3>
-                                <PlayerBid 
-                                tableDict={tableDict}
-                                sidesPerDie={sidesPerDie}
-                                palifico={palifico}
-                                roundHistory={roundHistory}
-                                currentPlayer={tablePlayer}
-                                onSave={(move) => {
-                                    handlePlayerMove(move);
-                                }}
-                                />
+                                <div 
+                                className='table-text table-character'
+                                style={{
+                                    top: y,
+                                    left: x,
+                                    opacity: tableDict[tablePlayer]['dice'] === 0 ? 0.5 : 1,
+                                }}>
+                                    <h3>{tablePlayer} </h3>
+                                    {/* <h3>Your hand: {tableDict[tablePlayer]['hand']}</h3> */}
+                                </div>
+                                <div
+                                className='table-text table-move'
+                                style={{
+                                    top: outerY,
+                                    left: outerX,
+                                }}>
+                                    <PlayerBid 
+                                    tableDict={tableDict}
+                                    sidesPerDie={sidesPerDie}
+                                    palifico={palifico}
+                                    roundHistory={roundHistory}
+                                    currentPlayer={tablePlayer}
+                                    onSave={(move) => {
+                                        handlePlayerMove(move);
+                                    }}
+                                    />
+                                </div>
                             </div>
                         )
                     }
                     else {
                         return (
                             <div>
-                                <h3>(current) {tablePlayer}: </h3>
+                                <div 
+                                className='table-text table-character'
+                                style={{
+                                    top: y,
+                                    left: x,
+                                    opacity: tableDict[tablePlayer]['dice'] === 0 ? 0.5 : 1,
+                                    fontStyle: 'italic'
+                                }}>
+                                    <h3>{tablePlayer} </h3>
+                                </div>
+                                <div
+                                className='table-text table-move'
+                                style={{
+                                    top: outerY,
+                                    left: outerX,
+                                }}>
+                                    { renderThinking() }
+                                </div>
                             </div>
+                            
+
+                            
                         )
             
                     }
@@ -348,9 +422,23 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 else if (tablePlayer === getLastPlayerBid()[0]) {
                     return (
                         <div>
-                            <h3>{tablePlayer}: &nbsp;
-                                ({getLastPlayerBid()[1][0]},
-                                {getLastPlayerBid()[1][1]}) </h3>
+                            <div 
+                            className='table-text table-character'
+                            style={{
+                                top: y,
+                                left: x,
+                                opacity: tableDict[tablePlayer]['dice'] === 0 ? 0.5 : 1,
+                            }}>
+                                <h3>{tablePlayer}</h3>
+                            </div>
+                            <div
+                            className='table-text table-move'
+                            style={{
+                                top: outerY,
+                                left: outerX,
+                            }}>
+                                <h3>{formatMove(getLastPlayerBid()[1])}</h3>
+                            </div>
                         </div>
                     )
 
@@ -358,7 +446,17 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 else {
                     return (
                         <div>
-                            <h3>{tablePlayer}: </h3>
+                            <div 
+                            className='table-text table-character'
+                            style={{
+                                top: y,
+                                left: x,
+                                opacity: tableDict[tablePlayer]['dice'] === 0 ? 0.5 : 1,
+                                //border: '1px solid white',
+                            }}>
+                                <h3>{tablePlayer} </h3>
+                            </div>
+                            
                         </div>
                     )
                     
@@ -382,6 +480,34 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
             </div>
         )
 
+    };
+
+    // renders the palifico signal/alert
+    const renderPalifico = () => {
+
+        return (
+            <div className='table-palifico'>
+                <div>palifico!</div>
+            </div>
+        )
+    };
+
+    // renders the thinking animation
+    const renderThinking = () => {
+
+        return (
+            <div className='text'
+            style={{
+                fontStyle: 'italic'
+            }}>
+                thinking 
+                <div>
+                    <span className="dot">.</span>
+                    <span className="dot">.</span>
+                    <span className="dot">.</span>
+                </div>
+            </div>
+        )
     };
 
 
@@ -410,9 +536,33 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
 
     return (
-        <div>
+        <div
+        style={{
+            height: '100%',
+            width: '100%',
+        }}>
+
+                <div 
+                className='main-table-container'>
+                    <div 
+                    className='table-container'
+                    style={{
+                        //border: '1px solid white',
+                    }}>
+                        {/* table image */} 
+                        <img 
+                        className='game-table'
+                        src='assets/table.png' alt='table'/>
+                        {/* render palifico alert */}
+                        { palifico && renderPalifico() }
+                        {/* render the table */}
+                        { renderTable() }
+                    </div>
+
+
+                </div>
                 
-                { renderTable() }
+                
 
                 {roundEnd && (
                     renderEndRound()
@@ -420,19 +570,19 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                     
 
 
-                <div>
+                {/* <div>
                     <h3>palifico: {palifico ? 'true' : 'false'}</h3>
-                </div>
+                </div> */}
 
-                { renderHands() }
+                {/* { renderHands() } */}
 
-                <Chat 
+                {/* <Chat 
                 gameID={gameID}
                 player={player}
                 table={table}
                 currentPlayer={currentPlayer}
                 roundHistory={roundHistory}
-                />
+                /> */}
 
             </div>
     )

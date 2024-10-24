@@ -3,21 +3,23 @@ import { React, useEffect, useState } from 'react';
 import { Button, Input } from 'reactstrap';
 import axios from 'axios';
 
+import ValueDropDown from './ValueDropDown';
 
 import { apiCall } from '../../../api';
 
 
 
 
-const PlayerBid = (props) => {
+const PlayerBid = ({ tableDict, sidesPerDie, palifico, roundHistory, currentPlayer, onSave }) => {
 
-    const { tableDict, sidesPerDie, palifico, roundHistory, currentPlayer, onSave } = props;
-
-    const [legalBids, setLegalBids] = useState([]);
-    const [currentQuantity, setCurrentQuantity] = useState(null);
-    const [currentValue, setCurrentValue] = useState(null);
+    const [legalBids, setLegalBids] = useState([]); // all the legal bids for the current player
+    const [currentQuantity, setCurrentQuantity] = useState(null); // the current quantity of the bid
+    const [currentValue, setCurrentValue] = useState(null); // the current value of the bid
+    const [availableValues, setAvailableValues] = useState([]); // the available values, given the current quantity
 
     const [roundStart, setRoundStart] = useState(true ? roundHistory.length === 0 : false);
+
+    const [legal, setLegal] = useState(false); // whether the current bid is legal
 
 
     useEffect(() => {
@@ -52,6 +54,81 @@ const PlayerBid = (props) => {
     }
     , [tableDict, currentPlayer]);
 
+
+    // updates avaialble values when the current quantity changes
+    useEffect(() => {
+
+        if (!currentQuantity) {
+            return;
+        }
+
+        let singular = false;
+
+        if (parseInt(currentQuantity) === 1) {
+            singular = true;
+        }
+
+        let newAvailableValues = [];
+
+        const valueDict = {
+            1: singular ? (palifico ? 'one': 'jessie') : (palifico ? 'ones': 'jessies'),
+            2: singular ? 'two' : 'twos',
+            3: singular ? 'three' : 'threes',
+            4: singular ? 'four' : 'fours',
+            5: singular ? 'five' : 'fives',
+            6: singular ? 'six' : 'sixes',
+        }
+
+        let quantityBids = legalBids.filter(bid => bid[0] === parseInt(currentQuantity));
+
+        
+        quantityBids.forEach(bid => {
+
+            newAvailableValues.push(valueDict[bid[1]]);
+
+        });
+
+        // remove duplicates
+        newAvailableValues = [...new Set(newAvailableValues)];
+
+        setAvailableValues(newAvailableValues);
+        
+    }, [currentQuantity]);
+
+    // updates whether the current bid is legal
+    useEffect(() => {
+
+        if (!currentQuantity || !currentValue) {
+            setLegal(false);
+            return;
+        }
+
+        console.log(currentQuantity, currentValue);
+        console.log(checkLegal(currentQuantity, currentValue));
+
+        setLegal(checkLegal(currentQuantity, currentValue));
+
+    }, [currentQuantity, currentValue]);
+
+
+    // check if a bid is legal
+    const checkLegal = (quantity, value) => {
+
+        let currentBid = [parseInt(quantity), parseInt(value)];
+
+        const isLegal = legalBids.some((legalBid) => {
+            let bid = [parseInt(legalBid[0]), parseInt(legalBid[1])];
+    
+            if (currentBid[0] === bid[0] && currentBid[1] === bid[1]) {
+                return true;
+            }
+            return false;
+        });
+    
+        return isLegal;
+
+    };
+
     const handleBid = (quantity, value) => {
 
         const bid = [parseInt(quantity), parseInt(value)];
@@ -77,41 +154,72 @@ const PlayerBid = (props) => {
 
     };
 
+    const handleValueChange = (value) => {
 
+        const valueToInt = {
+            'one': 1, 'ones': 1, 
+            'jessie': 1, 'jessies': 1,
+            'two': 2, 'twos': 2,
+            'three': 3, 'threes': 3,
+            'four': 4, 'fours': 4,
+            'five': 5, 'fives': 5,
+            'six': 6, 'sixes': 6,
+        }
+
+        setCurrentValue(valueToInt[value]);
+    };
 
     return (
-        <div>
-            <h1>Bid</h1>
-            <Input
-                        type="text"
-                        placeholder="Quantity"
-                        onChange={(e) => {
+        <div 
+        className='container flex-row'
+        style={{
+            gap: '10px',
+        }}>
+            <input
+            className='bid-quantity text player-bid'
+            type="text"
+            placeholder="quantity"
+            onChange={(e) => {
                             setCurrentQuantity(e.target.value);
                         }}
             />
-            <Input 
-                        type="text"
-                        placeholder="Value"
-                        onChange={(e) => {
-                                setCurrentValue(e.target.value);
-                            
-                        }}
+
+            <ValueDropDown
+            availableValues={availableValues}
+            palifico={palifico}
+            singular={parseInt(currentQuantity) === 1}
+            onValueChange={(value) => handleValueChange(value)}
             />
-            <Button
+
+            <div
+            className='bid-button text player-bid'
+            disabled={!currentQuantity || !currentValue}
             onClick={() => handleBid(currentQuantity, currentValue)}
+            style={{
+                pointerEvents: legal ? 'auto' : 'none',
+                opacity: legal ? 1 : 0.5
+            }}
             >
-                Bid
-            </Button>
+                bid
+            </div>
+
             {!roundStart && (
-                <div>
-                    <p>or</p>
-                    <Button
-                    onClick={() => handleCall()}
-                    >
-                        Call
-                    </Button>
+                <div
+                style={{
+                    marginLeft: '5%',
+                    marginRight: '2%',
+                }}>or</div>
+            )}
+
+            {!roundStart && (
+                <div
+                className='bid-button text player-bid'
+                onClick={() => handleCall()}
+                >
+                    lift
                 </div>
             )}
+
             
         </div>
     );

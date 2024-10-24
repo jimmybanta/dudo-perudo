@@ -313,13 +313,19 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
         const [quantity, value] = move;
 
+        let singular = false;
+
+        if (parseInt(quantity) === 1) {
+            singular = true;
+        }
+
         const valueDict = {
-            1: palifico ? 'ones' : 'jessies',
-            2: 'twos',
-            3: 'threes',
-            4: 'fours',
-            5: 'fives',
-            6: 'sixes'
+            1: singular ? (palifico ? 'one' : 'jessie') : (palifico ? 'ones' : 'jessies'),
+            2: singular ? 'two' : 'twos',
+            3: singular ? 'three' : 'threes',
+            4: singular ? 'four' : 'fours',
+            5: singular ? 'five' : 'fives',
+            6: singular ? 'six' : 'sixes',
         }
 
         return `${quantity} ${valueDict[value]}`;
@@ -367,7 +373,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                     {/* <h3>Your hand: {tableDict[tablePlayer]['hand']}</h3> */}
                                 </div>
                                 <div
-                                className='table-text table-move'
+                                className='table-text table-move player-move'
                                 style={{
                                     top: outerY,
                                     left: outerX,

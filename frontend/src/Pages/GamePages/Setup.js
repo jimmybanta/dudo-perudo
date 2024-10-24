@@ -51,6 +51,10 @@ const Setup = ({ onSave }) => {
 
     const handleSetTablePlayers = (name) => {
 
+        if (table.length >= 12) {
+            return;
+        }
+
         let newTable = [...table];
 
         let playerDict = {};
@@ -270,7 +274,7 @@ const Setup = ({ onSave }) => {
                     }}
                     onClick={() => handleSave()}
                     >
-                        let's play
+                        onward!
                     </div>
 
                     {/* <div className='container flex-row'

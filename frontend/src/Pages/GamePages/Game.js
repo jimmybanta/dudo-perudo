@@ -10,7 +10,7 @@ import { apiCall } from '../../api';
 import { rollDice, sleep } from '../../utils'; 
 
 
-const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPerDie }) => {
+const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPerDie, cups }) => {
 
     // game state
     const [tableDict, setTableDict] = useState(playTableDict); // dictionary of players with dice, hands, ex-palifico
@@ -26,6 +26,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
     const [roundEnd, setRoundEnd] = useState(false); // whether we're at the end of a round
     const [roundLoser, setRoundLoser] = useState(null); // the loser of the round
     const [roundTotal, setRoundTotal] = useState(null); // the total of the specific value that was lifted on
+
 
 
     // refs
@@ -339,7 +340,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         // middle will hold the player names
         // outer will hold the player moves/thinking
         const radius = 300;
-        const innerRadius = radius * 0.7;
+        const innerRadius = radius * 0.5;
         const outerRadius = radius * 1.3;
         
         const angleStep = (2 * Math.PI) / table.length;
@@ -452,6 +453,14 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 else {
                     return (
                         <div>
+                            <div
+                                className='table-text table-move'
+                                style={{
+                                    top: innerY,
+                                    left: innerX,
+                                }}>
+                                    { renderCup(tablePlayer) }
+                                </div>
                             <div 
                             className='table-text table-character'
                             style={{
@@ -516,6 +525,17 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         )
     };
 
+    // renders a cup image
+    const renderCup = (player) => {
+
+        return (
+            <img 
+                className='table-cup'
+                src={`assets/cup-${cups[player]}.png`}
+                />
+        )
+
+    }
 
 
 

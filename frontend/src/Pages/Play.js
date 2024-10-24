@@ -12,6 +12,8 @@ import { rollDice } from '../utils';
 
 axios.defaults.baseURL = BASE_URL;
 
+const cupOptions = [1, 2, 3, 4, 5, 6]; // the ids of cup images that are currently available
+
 
 
 const Play = ({ onSetCurrentPage }) => {
@@ -35,16 +37,25 @@ const Play = ({ onSetCurrentPage }) => {
     });
     const [currentPlayer, setCurrentPlayer] = useState('crespin');
     const [sidesPerDie, setSidesPerDie] = useState(6);
+    const [cups, setCups] = useState({
+        'crespin': 1,
+        'riyaaz': 2,
+        'jimmy': 3,
+        'adam': 4,
+        'adam-2': 5,
+        'theo': 6,
+    });
 
     const [setupComplete, setSetupComplete] = useState(true);
 
 
     //// Setup variables
 
-    /* const [player, setPlayer] = useState(null); // the player's name
+/*     const [player, setPlayer] = useState(null); // the player's name
     const [table, setTable] = useState([]); // the table of players
     const [dicePerPlayer, setDicePerPlayer] = useState(null); // the number of dice per player
     const [sidesPerDie, setSidesPerDie] = useState(null); // the number of sides per die
+    const [cups, setCups] = useState({}); // a dictionary mapping each player to their cup number (for image rendering)
 
     const [setupComplete, setSetupComplete] = useState(false); // whether the game setup is complete
 
@@ -58,8 +69,8 @@ const Play = ({ onSetCurrentPage }) => {
     const [tableDict, setTableDict] = useState({});
 
     // currentPlayer is the player whose turn it is
-    const [currentPlayer, setCurrentPlayer] = useState(null); */
-     
+    const [currentPlayer, setCurrentPlayer] = useState(null);
+ */     
 
     //// round variables - specific to a round
     // roundHistory is the history of the round
@@ -135,7 +146,26 @@ const Play = ({ onSetCurrentPage }) => {
 
         setGameID(initializeResp.game_id);
         setCurrentPlayer(startingPlayer);
-        console.log('starting player:', startingPlayer);
+
+        let tempCups = [...cupOptions];
+        // shuffle tempcups
+        tempCups.sort(() => Math.random() - 0.5);
+        let tempCupsDict = {};
+
+        table.forEach(player => {
+
+            // if we've run out of cups, then start over
+            if (tempCups.length === 0) {
+                tempCups = [...cupOptions];
+                // shuffle tempcups
+                tempCups.sort(() => Math.random() - 0.5);
+            }
+
+            tempCupsDict[player] = tempCups.pop();
+        }
+        )
+
+        setCups(tempCupsDict);
 
         setSetupComplete(true);
 
@@ -189,6 +219,7 @@ const Play = ({ onSetCurrentPage }) => {
                     playTableDict={tableDict}
                     playCurrentPlayer={currentPlayer}
                     sidesPerDie={sidesPerDie}
+                    cups={cups}
                 />
             
             )}

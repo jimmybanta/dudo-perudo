@@ -12,6 +12,7 @@
   --edge-opacity: 0.85;
   --text-color: #e3e9f5;
   --palifico-color: #ff588a;
+  --end-round-color: #ffffff;
   --user-text-color: #a9a9a9;
   --link-color: #d48aff;
   --link-hover-color: #b574da;
@@ -122,7 +123,20 @@ html, body {
 }
 
 .table-palifico {
-  font-size: calc(2rem + 2vw);
+  font-size: calc(1.5rem + 1.5vw);
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-style: italic;
+  text-shadow: 5px 5px 2px rgba(47, 47, 47, 1);
+  user-select: none;
+  color: var(--palifico-color);
+  z-index: 1000;
+}
+
+.table-end-round-normal {
+  font-size: calc(1.5rem + 1.5vw);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -130,7 +144,21 @@ html, body {
   font-style: italic;
   text-shadow: 5px 5px 2px rgba(47, 47, 47, 1);
   user-select: none;
-  color: var(--palifico-color);
+  z-index: 1000;
+  color: var(--end-round-color);
+}
+
+.table-end-round-palifico {
+  font-size: calc(1.5rem + 1.5vw);
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-style: italic;
+  text-shadow: 5px 5px 2px rgba(47, 47, 47, 1);
+  user-select: none;
+  z-index: 1000;
+  color: var(--end-round-color);
 }
 
 .player-move {
@@ -142,6 +170,26 @@ html, body {
   height: auto;
 }
 
+.player-cup {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.player-cup:hover {
+  transform: translateY(-10%);
+}
+
+.player-dice {
+  cursor: pointer;
+}
+
+.die-image {
+  width: 40px;
+  height: auto;
+  transition: all 0.3s ease;
+  margin: 3px;
+  opacity: 0.9;
+}
 
 
 
@@ -213,6 +261,11 @@ html, body {
 
 .player-bid {
   font-size: calc(1rem + 0.5vw);
+  user-select: none;
+}
+
+.end-round-text {
+  font-size: calc(2rem + 1vw);
   user-select: none;
 }
 
@@ -478,6 +531,16 @@ html, body {
 }
 
 
+/* end round display */
+
+.end-round {
+  position: absolute;
+  top: 5%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+
+
 /* value dropdown */
 
 /* The container <div> - needed to position the dropdown content */
@@ -523,6 +586,7 @@ html, body {
   display: block;
   transition: all 0.3s ease;
   cursor: pointer;
+  z-index: 1000;
 }
 
 /* Change color of dropdown links on hover */

@@ -140,8 +140,8 @@ class AIRandomPlayer(AIPlayer):
 
         n = random.random()
 
-        # 0% chance of calling
-        if n < 0:
+        # 25% chance of calling
+        if n < 0.25:
             return 'call'
 
         # 75% chance of bidding

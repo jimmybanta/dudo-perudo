@@ -65,10 +65,7 @@ def initialize_game(request):
     game.save()
 
     ### Determine who goes first
-    #current_player = random.choice(table)
-
-    # temp - for now, the human player will always go first
-    current_player = player
+    current_player = random.choice(table)
 
     data_to_return = {
         'game_id': game.id,
@@ -140,7 +137,7 @@ def get_move(request):
 
     ## to do - add pausing/thinking time logic
     # time in milliseconds
-    pause = 3000
+    pause = 1000
     
     return JsonResponse({'move': move, 'pause': pause})
     

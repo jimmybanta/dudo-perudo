@@ -7,7 +7,7 @@ import { apiCall } from '../../api';
 
 axios.defaults.baseURL = BASE_URL;
 
-const defaultDicePerPlayer = 5;
+const defaultDicePerPlayer = 2;
 const defaultSidesPerDie = 6;
 
 
@@ -277,49 +277,6 @@ const Setup = ({ onSave }) => {
                         onward!
                     </div>
 
-                    {/* <div className='container flex-row'
-                    style={{
-                        width: '100%',
-
-                    }}
-                    >
-
-                        <div className='container flex-column' style={{ 
-                            width: '50%',
-                             }}>
-                                <h3>Dice per player:</h3>
-                        <Input
-                            type='number'
-                            value={dicePerPlayer}
-                            onChange={(e) => {
-                                setDicePerPlayer(e.target.value);
-                            }}
-                        />
-
-                        </div>
-
-                        <div className='container flex-column' style={{ 
-                            width: '50%' }}>
-                                <h3>Sides per die:</h3>
-                        <Input
-                            type='number'
-                            value={sidesPerDie}
-                            onChange={(e) => {
-                                setSidesPerDie(e.target.value);
-                            }}
-                        />
-
-                        </div>
-
-                    </div> */}
-                    
-                    {/* <div className='container'>
-                        <Button
-                            onClick={() => onSave(player, dicePerPlayer, sidesPerDie, table)}
-                        >
-                            Let's play some fuckin perudo!
-                        </Button>
-                    </div> */}
                 </div>
         )}
         </div>

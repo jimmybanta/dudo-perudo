@@ -103,9 +103,6 @@ const PlayerBid = ({ tableDict, sidesPerDie, palifico, roundHistory, currentPlay
             return;
         }
 
-        console.log(currentQuantity, currentValue);
-        console.log(checkLegal(currentQuantity, currentValue));
-
         setLegal(checkLegal(currentQuantity, currentValue));
 
     }, [currentQuantity, currentValue]);

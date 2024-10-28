@@ -20,7 +20,7 @@ const Play = ({ onSetCurrentPage }) => {
 
     // temp setup
 
-    const [dicePerPlayer, setDicePerPlayer] = useState(2);
+    /* const [dicePerPlayer, setDicePerPlayer] = useState(2);
 
     const [player, setPlayer] = useState('crespin');
     const [gameID, setGameID] = useState(59);
@@ -46,16 +46,26 @@ const Play = ({ onSetCurrentPage }) => {
         'theo': 6,
     });
 
-    const [setupComplete, setSetupComplete] = useState(true);
+    const [showDice, setShowDice] = useState({
+        'crespin': false,
+        'riyaaz': false,
+        'jimmy': false,
+        'adam': false,
+        'adam-2': false,
+        'theo': false,
+    });
+
+    const [setupComplete, setSetupComplete] = useState(true); */
 
 
     //// Setup variables
 
-/*     const [player, setPlayer] = useState(null); // the player's name
+    const [player, setPlayer] = useState(null); // the player's name
     const [table, setTable] = useState([]); // the table of players
     const [dicePerPlayer, setDicePerPlayer] = useState(null); // the number of dice per player
     const [sidesPerDie, setSidesPerDie] = useState(null); // the number of sides per die
     const [cups, setCups] = useState({}); // a dictionary mapping each player to their cup number (for image rendering)
+    const [showDice, setShowDice] = useState({}); // a dictionary mapping each player to whether their dice should be shown
 
     const [setupComplete, setSetupComplete] = useState(false); // whether the game setup is complete
 
@@ -70,38 +80,6 @@ const Play = ({ onSetCurrentPage }) => {
 
     // currentPlayer is the player whose turn it is
     const [currentPlayer, setCurrentPlayer] = useState(null);
- */     
-
-    //// round variables - specific to a round
-    // roundHistory is the history of the round
-    /* const [roundHistory, setRoundHistory] = useState([]);
-    const roundHistoryRef = useRef(roundHistory);
-    // palifico is a boolean to determine if the round is palifico
-    const [palifico, setPalifico] = useState(false);
-    // lastPlayer is the player who made the last bid
-    const [lastPlayer, setLastPlayer] = useState(null);
-    // lastBid is the last bid made 
-    const [lastBid, setLastBid] = useState(null);
-    
-    // currentBid is the current bid
-    const [currentBid, setCurrentBid] = useState(null);   
-    // roundLoser is the player who lost the round
-    const [roundLoser, setRoundLoser] = useState(null);
-    const roundLoserRef = useRef(roundLoser);
-    // roundTotal is the total of the specific value that was lifted on
-    const [roundTotal, setRoundTotal] = useState(null);
-
-    //// display variables - variables governing what is displayed
-    // displayLastPlayer is the player who made the last bid to be displayed
-    const [displayLastPlayer, setDisplayLastPlayer] = useState(null);
-    // displayLastBid is the last bid to be displayed
-    const [displayLastBid, setDisplayLastBid] = useState(null);
-    // displayCurrentPlayer is the player whose turn it is to be displayed
-    const [displayCurrentPlayer, setDisplayCurrentPlayer] = useState(null);
-    // displayCurrentBid is the current bid to be displayed
-    const [displayCurrentBid, setDisplayCurrentBid] = useState(null);
-    // showEndRound is a boolean to determine if the end round display should be shown
-    const [showEndRound, setShowEndRound] = useState(false); */
     
 
 
@@ -134,7 +112,7 @@ const Play = ({ onSetCurrentPage }) => {
         table.forEach(player => {
             tempTableDict[player] = {
                 'dice': dicePerPlayer,
-                'hand': [],
+                'hand': rollDice(dicePerPlayer, sidesPerDie),
                 'ex-palifico': false
             }
         }
@@ -147,6 +125,7 @@ const Play = ({ onSetCurrentPage }) => {
         setGameID(initializeResp.game_id);
         setCurrentPlayer(startingPlayer);
 
+        // set the cups
         let tempCups = [...cupOptions];
         // shuffle tempcups
         tempCups.sort(() => Math.random() - 0.5);
@@ -164,8 +143,16 @@ const Play = ({ onSetCurrentPage }) => {
             tempCupsDict[player] = tempCups.pop();
         }
         )
-
         setCups(tempCupsDict);
+
+        // set the showDice dict
+        let tempShowDice = {};
+
+        table.forEach(player => {
+            tempShowDice[player] = false;
+        });
+        setShowDice(tempShowDice);
+
 
         setSetupComplete(true);
 
@@ -220,6 +207,7 @@ const Play = ({ onSetCurrentPage }) => {
                     playCurrentPlayer={currentPlayer}
                     sidesPerDie={sidesPerDie}
                     cups={cups}
+                    playShowDice={showDice}
                 />
             
             )}

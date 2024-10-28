@@ -36,6 +36,8 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
     // whenever currentPlayer changes
     useEffect(() => {
 
+        console.log('currentPlayer:', currentPlayer);
+
         const handleAIMove = async () => {
 
             const [moveSuccess, moveResp] = await apiCall({
@@ -84,6 +86,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         }
 
         if (currentPlayer !== player) {
+            console.log('AI move');
             handleAIMove();
         }
 
@@ -228,7 +231,9 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                     continue;
                 }
 
-                await sleep(1000);
+                // wait a random amount of time between .75 and 1.5 seconds
+                let waitTime = Math.random() * 750 + 750;
+                await sleep(waitTime);
 
                 let tempShowDice = {...showDice};
                 tempShowDice[player] = true;
@@ -272,6 +277,13 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         // determine the loser
         const loser = correct ? currentPlayer : lastPlayer;
 
+        // clear the shown dice
+        let tempShowDice = {...showDice};
+        for (const player in tempShowDice) {
+            tempShowDice[player] = false;
+        }
+        setShowDice(tempShowDice);
+
         setRoundLoser(loser);
 
         // update the round in the backend 
@@ -298,8 +310,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
     // to handle transitioning between rounds
     const handleRoundTransition = async (loser, total, newRoundHistory) => {
-
-        setCurrentPlayer(null);
 
         setRoundEnd(false);
 
@@ -347,13 +357,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
         // if it's not, then continue onto next round
 
-        // reset the dice view
-        let tempShowDice = {...showDice};
-        for (const player in tempShowDice) {
-            tempShowDice[player] = false;
-        }
-        setShowDice(tempShowDice);
-
         // need to roll hands for everyone
         for (const player in tempTableDict) {
             tempTableDict[player]['hand'] = rollDice(tempTableDict[player]['dice'], sidesPerDie);
@@ -362,7 +365,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
         // then, reset the round state
         setRoundHistory([]);
-        setCurrentPlayer(null);
         setRoundLoser(null);
         setRoundTotal(null);
 
@@ -407,7 +409,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         return `${quantity} ${valueDict[value]}`;
     };
     
-    
+
     // renders the table
     const renderTable = () => {
 
@@ -449,7 +451,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                     { renderCupDice(tablePlayer) }
                                 </div>
                                 <div 
-                                className='table-text table-character'
+                                className={`table-text table-character color-${cups[tablePlayer]}`}
                                 style={{
                                     top: y,
                                     left: x,
@@ -495,7 +497,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                     { renderCupDice(tablePlayer) }
                                 </div>
                                 <div 
-                                className='table-text table-character'
+                                className={`table-text table-character color-${cups[tablePlayer]}`}
                                 style={{
                                     top: y,
                                     left: x,
@@ -531,7 +533,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                     { renderCupDice(tablePlayer) }
                             </div>
                             <div 
-                            className='table-text table-character'
+                            className={`table-text table-character color-${cups[tablePlayer]}`}
                             style={{
                                 top: y,
                                 left: x,
@@ -563,7 +565,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                 { renderCupDice(tablePlayer) }
                             </div>
                             <div 
-                            className='table-text table-character'
+                            className={`table-text table-character color-${cups[tablePlayer]}`}
                             style={{
                                 top: y,
                                 left: x,

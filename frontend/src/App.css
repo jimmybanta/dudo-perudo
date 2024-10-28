@@ -19,6 +19,14 @@
   --highlight-color: #f1d9ff;
   --bid-button-color: #e3e9f5;
   --bid-button-hover-color: #c0c5cf;
+
+  /* cup colors */
+  --cup-color-1: rgb(174, 109, 82);
+  --cup-color-2: rgb(225, 44, 56);
+  --cup-color-3: rgb(0, 164, 225);
+  --cup-color-4: rgb(85, 164, 46);
+  --cup-color-5: rgb(255, 101, 37);
+  --cup-color-6: rgb(245, 177, 58);
 }
 
 
@@ -116,7 +124,7 @@ html, body {
 }
 
 .table-move {
-  font-size: calc(0.75rem + 0.5vw);
+  font-size: calc(0.75rem + 0.75vw);
   border: 0px solid white;
   border-radius: 50px;
   padding: 10px;
@@ -268,6 +276,29 @@ html, body {
   font-size: calc(2rem + 1vw);
   user-select: none;
 }
+
+
+/* cup color text */
+
+.color-1 {
+  color: var(--cup-color-1);
+}
+.color-2 {
+  color: var(--cup-color-2);
+}
+.color-3 {
+  color: var(--cup-color-3);
+}
+.color-4 {
+  color: var(--cup-color-4);
+}
+.color-5 {
+  color: var(--cup-color-5);
+}
+.color-6 {
+  color: var(--cup-color-6);
+}
+
 
 
 

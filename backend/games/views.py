@@ -10,6 +10,7 @@ import config
 import random
 import time
 import json
+import logging
 
 from games.models import Game, Character
 from games.serializers import CharacterSerializer
@@ -20,7 +21,7 @@ from perudo.characters.characters import CHARACTERS
 
 from prompting import prompt
 
-
+logger = logging.getLogger(__name__)
 
 
 ## Viewsets
@@ -119,6 +120,8 @@ def get_move(request):
     round_history = request.data['round_history']
     table_dict = request.data['table_dict']
     palifico = request.data['palifico']
+
+    logger.info(f'Getting move for {current_player}')
 
     # note - could be used later, if we want to incorporate game history into AI moves
     game_history = request.data['game_history']

@@ -81,12 +81,11 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
             , pause);
         };
 
-        if (currentPlayer === null) {
+        if (currentPlayer === null || currentPlayer === 'nobody') {
             return;
         }
 
         if (currentPlayer !== player) {
-            console.log('AI move');
             handleAIMove();
         }
 
@@ -204,10 +203,11 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
     const handleCall = async () => {
 
         // starting at the current player, go around the table and show all the dice
+        const callingPlayer = currentPlayer;
 
         // reorganize the table so that the current player is first
         let tempTable = [...table];
-        tempTable = tempTable.slice(table.indexOf(currentPlayer)).concat(tempTable.slice(0, table.indexOf(currentPlayer)));
+        tempTable = tempTable.slice(table.indexOf(callingPlayer)).concat(tempTable.slice(0, table.indexOf(callingPlayer)));
 
         let shown = [];
 
@@ -259,7 +259,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 setRoundTotal(runningTotal);
 
                 shown.push(player);
-            }};
+        }};
 
         
         await showDice();
@@ -267,8 +267,10 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         // wait a bit before showing the loser
         await sleep(1000);
 
+        setCurrentPlayer('nobody');
+
         // add the call to the round history
-        const newRoundHistory = [...roundHistory, [currentPlayer, 'call']];
+        const newRoundHistory = [...roundHistory, [callingPlayer, 'call']];
         setRoundHistory(newRoundHistory);
 
         // score the bid

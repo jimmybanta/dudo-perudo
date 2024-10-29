@@ -224,16 +224,17 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
             // one by one show the dice
             for (let index = 0; index < tempTable.length; index++) {
 
+                // wait a bit extra for the second person
+                if (index === 1) {
+                    await sleep(500);
+                }
+
                 let player = tempTable[index];
 
                 // if the player is out of the game, skip them
                 if (tableDict[player]['dice'] === 0) {
                     continue;
                 }
-
-                // wait a random amount of time between .75 and 1.5 seconds
-                let waitTime = Math.random() * 750 + 750;
-                await sleep(waitTime);
 
                 let tempShowDice = {...showDice};
                 tempShowDice[player] = true;
@@ -259,15 +260,16 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 setRoundTotal(runningTotal);
 
                 shown.push(player);
+
+                // wait a random amount of time between .75 and 1.5 seconds
+                let waitTime = Math.random() * 750 + 500;
+                await sleep(waitTime);
         }};
 
         
         await showDice();
 
-        // wait a bit before showing the loser
-        await sleep(1000);
-
-        setCurrentPlayer('nobody');
+        setCurrentPlayer(null);
 
         // add the call to the round history
         const newRoundHistory = [...roundHistory, [callingPlayer, 'call']];
@@ -420,7 +422,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         // outer will hold the player moves/thinking
         const radius = 300;
         const innerRadius = radius * 0.5;
-        const outerRadius = radius * 1.3;
+        const outerRadius = radius * 1.2;
         
         const angleStep = (2 * Math.PI) / table.length;
         
@@ -429,8 +431,8 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
             table.map((tablePlayer, index) => {
 
                 let angle = angleStep * index + (Math.PI / 2);
-                const x = radius + (radius * Math.cos(angle));
-                const y = radius + (radius * Math.sin(angle));
+                const x = radius + ((radius * 0.9) * Math.cos(angle));
+                const y = radius + ((radius * 0.9) * Math.sin(angle));
 
                 const innerX = radius + (innerRadius * Math.cos(angle));
                 const innerY = radius + (innerRadius * Math.sin(angle));
@@ -785,7 +787,10 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         }}>
 
                 <div 
-                className='main-table-container'>
+                className='main-table-container'
+                style={{
+                    //border: '1px solid white',
+                }}>
                     <div 
                     className='table-container'
                     style={{
@@ -806,13 +811,14 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
                 </div>
 
-                {/* <Chat 
+                <Chat 
                 gameID={gameID}
                 player={player}
                 table={table}
                 currentPlayer={currentPlayer}
                 roundHistory={roundHistory}
-                /> */}
+                cups={cups}
+                />
 
             </div>
     )

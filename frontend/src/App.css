@@ -20,12 +20,14 @@
   --bid-button-color: #e3e9f5;
   --bid-button-hover-color: #c0c5cf;
 
+  --chat-header-background-color: #2f2f2f83;
+
   /* cup colors */
   --cup-color-1: rgb(174, 109, 82);
   --cup-color-2: rgb(225, 44, 56);
   --cup-color-3: rgb(0, 164, 225);
   --cup-color-4: rgb(85, 164, 46);
-  --cup-color-5: rgb(255, 101, 37);
+  --cup-color-5: rgb(255, 153, 109);
   --cup-color-6: rgb(245, 177, 58);
 }
 
@@ -200,6 +202,75 @@ html, body {
 }
 
 
+/* chat styling */
+
+.main-chat-container {
+  position: absolute;
+  left: 75%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--user-text-color);
+  box-shadow: 3px 3px 5px rgba(103, 103, 103, 0.7);
+}
+
+@media (max-width: 768px) {
+  .main-chat-container {
+    position: absolute;
+    left: 100px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.chat-header {
+  display: flex;
+  justify-content: left;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--user-text-color);
+  background-color: var(--chat-header-background-color);
+  font-size: calc(1rem + 0.5vw);
+  user-select: none;
+}
+
+.chat-history {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  align-items: start;
+  justify-content: start;
+}
+
+.chat-message {
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: left;
+  padding-left: 10px;
+  padding: 10px 10px;
+  font-size: calc(0.75rem + 0.5vw);
+}
+
+.chat-input-container {
+  border-top: 1px solid var(--user-text-color);
+  background-color: var(--chat-header-background-color);
+  padding: 5px 10px; /* Add some padding */
+}
+
+.chat-input {
+  background-color: #00000000; /* Transparent background */
+  border: none; /* Remove default borders */
+  outline: none; /* Remove default outline */
+  width: 100%;
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  font-size: calc(1rem + .5vw); /* Relative font size */
+  text-align: left;
+  user-select: none;
+  color: var(--text-color);
+  font-family: 'IM Fell DW Pica', sans-serif;
+  padding: 5px 10px;
+}
 
 
 

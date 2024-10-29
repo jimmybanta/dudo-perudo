@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from 'react';
+import React, { useEffect, useState, useReducer, useRef } from 'react';
 
 import { BASE_URL } from '../../../BaseURL';
 
@@ -24,13 +24,16 @@ const reducer = (state, action) => {
     }
 };
 
-const Chat = ({ gameID, player, table, currentPlayer, roundHistory }) => {
+const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
     // a component for the chat
 
     // chat state
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const [userMessage, setUserMessage] = useState('');
+
+    const containerRef = useRef(null);
+    const inputRef = useRef(null);
 
 
 
@@ -156,15 +159,28 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory }) => {
     // for when the chat history changes
     useEffect(() => {
 
-        //console.log(state.history[state.history.length - 1]);
+        if (containerRef.current) {
+            containerRef.current.scrollTop = containerRef.current.scrollHeight;
+        }
 
     }, [state.history]);
 
     const renderHistory = () => {
+
         return state.history.map((message, index) => {
+
             return (
-                <div key={index}>
-                    <p>{message.writer}: {message.text}</p>
+                <div 
+                className={`chat-message color-${cups[message.writer]}`}
+                key={index}>
+                    <span
+                    style={{
+                        fontWeight: 'bold',
+                    }}>[{message.writer}]:&nbsp;
+                    </span>
+                    <span>
+                        {message.text}
+                    </span>
                 </div>
             );
         });
@@ -174,10 +190,14 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory }) => {
 
         if (e.key === 'Enter') {
 
+            let message = userMessage.trim();
+
+            setUserMessage('');
+
             // add the user's message to the history
             dispatch({ type: 'updateHistory', payload: {
                 writer: player,
-                text: userMessage,
+                text: message,
             } });
 
             const [chatSuccess, chatResp] = await apiCall({
@@ -188,7 +208,7 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory }) => {
                     player: player,
                     table: table,
                     writer: player,
-                    user_message: userMessage,
+                    user_message: message,
                     context: 'user_message',
                     round_history: roundHistory,
                     message_history: state.history,
@@ -201,7 +221,7 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory }) => {
                 return;
             }
 
-            setUserMessage('');
+            
         }
 
 
@@ -210,17 +230,42 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory }) => {
 
     return (
         <div
+        className='main-chat-container'
         style={{
-            height: '200px',
-            overflow: 'auto',
-        }}>
-            {renderHistory()}
-            <input
+        }}
+        onClick={() => inputRef.current && inputRef.current.focus()}>
+            <div
+            className='chat-header'>
+                <div 
+                className='text'>
+                    Chat
+                </div>
+            </div>
+
+            <div 
+            className='chat-history'
+            ref={containerRef}
+            >
+                { renderHistory() }
+            </div>
+
+            <div
+            className='chat-input-container'
+            >
+                <input
+                ref={inputRef}
+                className='chat-input'
                 type="text"
+                placeholder="..."
                 value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
                 onKeyDown={(e) => handleUserSubmit(e)}
-            />
+                />
+
+            </div>
+
+            
+            
 
         </div>
     )

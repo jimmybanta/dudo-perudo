@@ -31,6 +31,11 @@
   --cup-color-6: rgb(245, 177, 58);
 }
 
+#root {
+  height: 100%;
+  width: 100%;
+}
+
 
 /* app and body */
 .App {
@@ -52,6 +57,8 @@ html, body {
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+  height: 100%;
+  width: 100%;
 }
 
 
@@ -218,10 +225,9 @@ html, body {
 
 @media (max-width: 768px) {
   .main-chat-container {
-    position: absolute;
-    left: 100px;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 90%;
+    top: 130%;
+    width: 100%;
   }
 }
 
@@ -488,6 +494,12 @@ html, body {
   font-family: 'IM Fell DW Pica', sans-serif;
 }
 
+@media (max-width: 768px) {
+  .setup-input {
+    width: 75%;
+  }
+}
+
 .setup-input::placeholder {
   color: var(--text-color); /* Set placeholder color */
   opacity: 0.5; /* Make placeholder slightly transparent */
@@ -534,10 +546,22 @@ html, body {
   margin-bottom: 10px;
 }
 
+@media (max-width: 768px) {
+  .setup-header {
+    font-size: calc(1rem + 1.5vw);
+  }
+}
+
 .setup-char {
   cursor: pointer;
   padding: 10px 30px;
   transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .setup-char {
+    padding: 5px 10px;
+  }
 }
 
 
@@ -561,12 +585,30 @@ html, body {
 .setup-char-name {
   font-size: calc(1rem + 0.5vw); /* Relative font size */
   user-select: none;
+  width: 25;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .setup-char-name {
+    font-size: calc(0.8rem + 0.5vw);
+    width: 40%;
+  }
 }
 
 .setup-char-description {
   font-size: calc(0.8rem + 0.5vw); /* Relative font size */
   color: var(--user-text-color);
   user-select: none;
+  width: 75%;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .setup-char-description {
+    font-size: calc(0.6rem + 0.5vw);
+    width: 60%;
+  }
 }
 
 

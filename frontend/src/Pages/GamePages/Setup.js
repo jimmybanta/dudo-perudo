@@ -165,7 +165,7 @@ const Setup = ({ onSave }) => {
                 <div
                 className='container flex-column'
                 style={{
-                    width: '80%',
+                    width: '90%',
                     height: '100%',
                     //border: '1px solid blue',
                 }}>
@@ -206,13 +206,13 @@ const Setup = ({ onSave }) => {
 
                                         <div
                                         className='setup-char-name'
-                                        style={{width: '25%',
+                                        style={{
                                             textAlign: 'left',
                                         }}
                                         >{character.name}</div>
 
                                         <div
-                                        style={{width: '75%',
+                                        style={{
                                             textAlign: 'left',
                                         }}
                                         className='setup-char-description'
@@ -247,13 +247,13 @@ const Setup = ({ onSave }) => {
 
                                         <div
                                         className='setup-char-name'
-                                        style={{width: '10%',
+                                        style={{width: '15%',
                                             textAlign: 'left',
                                         }}
                                         >{i + 1}</div>
 
                                         <div
-                                        style={{width: '90%',
+                                        style={{width: '85%',
                                             textAlign: 'left',
                                         }}
                                         className='setup-char-description'

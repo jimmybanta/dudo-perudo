@@ -423,18 +423,25 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
         console.log(vw, vh);
 
-        const radius = (vw < 768) ? ((vw / 2)) : vh / 2;
+        const centerX = (vw < 768) ? (vw / 2) : ((vw / 10) * 3);
+        const centerY = (vw < 768) ? ((vh / 10) * 3) : (vh / 2);
 
-        let addY = 0;
-        let innerRadius = radius * 0.5;
-        let middleRadius = radius;
-        let outerRadius = radius * 1.2;
+
+        const radius = (vw < 768) ? ((vw / 2)) : Math.min(vh / 2, 300);
+
+        let innerRadius = 0;
+        let middleRadius = 0;
+        let outerRadius = 0;
 
         if (vw < 768) {
-            addY = ((vh / 10) * 3) - (vh / 4) + 15;
             innerRadius = radius * 0.3;
             middleRadius = radius * 0.65;
             outerRadius = radius * 0.92;
+        }
+        else {
+            innerRadius = radius * 0.5;
+            middleRadius = radius * 0.9;
+            outerRadius = radius * 1.2;
         }
 
 
@@ -450,14 +457,14 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
                 let angle = angleStep * index + (Math.PI / 2);
 
-                const innerX = radius + (innerRadius * Math.cos(angle));
-                const innerY = radius + (innerRadius * Math.sin(angle)) + addY;
+                const innerX = centerX + (innerRadius * Math.cos(angle));
+                const innerY = centerY + (innerRadius * Math.sin(angle));
 
-                const middleX = radius + (middleRadius * Math.cos(angle));
-                const middleY = radius + (middleRadius * Math.sin(angle)) + addY;
+                const middleX = centerX + (middleRadius * Math.cos(angle));
+                const middleY = centerY + (middleRadius * Math.sin(angle));
 
-                const outerX = radius + (outerRadius * Math.cos(angle));
-                const outerY = radius + (outerRadius * Math.sin(angle)) + addY;
+                const outerX = centerX + (outerRadius * Math.cos(angle));
+                const outerY = centerY + (outerRadius * Math.sin(angle));
 
                 // rendering the current player
                 {if (tablePlayer === currentPlayer) {

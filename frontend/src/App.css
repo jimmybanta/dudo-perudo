@@ -343,6 +343,7 @@ html, body {
   border-top: 1px solid var(--user-text-color);
   background-color: var(--chat-header-background-color);
   padding: 5px 10px; /* Add some padding */
+  margin-top: auto;
 }
 
 .chat-input {
@@ -714,7 +715,8 @@ html, body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 80%;
+  width: 75%;
+  max-width: 500px;
   transform: translate(-50%, -50%);
   opacity: 0.75;
   user-select: none;

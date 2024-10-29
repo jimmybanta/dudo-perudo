@@ -140,7 +140,7 @@ def get_move(request):
 
     ## to do - add pausing/thinking time logic
     # time in milliseconds
-    pause = 1000
+    pause = 5000
     
     return JsonResponse({'move': move, 'pause': pause})
     

@@ -417,12 +417,30 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
     // renders the table
     const renderTable = () => {
 
+
+        let vw = document.documentElement.clientWidth;
+        let vh = document.documentElement.clientHeight;
+
+        console.log(vw, vh);
+
+        const radius = (vw < 768) ? ((vw / 2)) : vh / 2;
+
+        let addY = 0;
+        let innerRadius = radius * 0.5;
+        let middleRadius = radius;
+        let outerRadius = radius * 1.2;
+
+        if (vw < 768) {
+            addY = ((vh / 10) * 3) - (vh / 4) + 15;
+            innerRadius = radius * 0.3;
+            middleRadius = radius * 0.65;
+            outerRadius = radius * 0.92;
+        }
+
+
         // inner will hold the cups/hands
         // middle will hold the player names
         // outer will hold the player moves/thinking
-        const radius = 300;
-        const innerRadius = radius * 0.5;
-        const outerRadius = radius * 1.2;
         
         const angleStep = (2 * Math.PI) / table.length;
         
@@ -431,14 +449,15 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
             table.map((tablePlayer, index) => {
 
                 let angle = angleStep * index + (Math.PI / 2);
-                const x = radius + ((radius * 0.9) * Math.cos(angle));
-                const y = radius + ((radius * 0.9) * Math.sin(angle));
 
                 const innerX = radius + (innerRadius * Math.cos(angle));
-                const innerY = radius + (innerRadius * Math.sin(angle));
+                const innerY = radius + (innerRadius * Math.sin(angle)) + addY;
+
+                const middleX = radius + (middleRadius * Math.cos(angle));
+                const middleY = radius + (middleRadius * Math.sin(angle)) + addY;
 
                 const outerX = radius + (outerRadius * Math.cos(angle));
-                const outerY = radius + (outerRadius * Math.sin(angle));
+                const outerY = radius + (outerRadius * Math.sin(angle)) + addY;
 
                 // rendering the current player
                 {if (tablePlayer === currentPlayer) {
@@ -447,7 +466,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                         return (
                             <div>
                                 <div
-                                className='table-text table-move'
+                                className='table-text table-character'
                                 style={{
                                     top: innerY,
                                     left: innerX,
@@ -457,8 +476,8 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                 <div 
                                 className={`table-text table-character color-${cups[tablePlayer]}`}
                                 style={{
-                                    top: y,
-                                    left: x,
+                                    top: middleY,
+                                    left: middleX,
                                     opacity: tableDict[tablePlayer]['dice'] === 0 ? 0.5 : 1,
                                 }}>
                                     <h3>{tablePlayer} </h3>
@@ -468,6 +487,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                 style={{
                                     top: outerY,
                                     left: outerX,
+                                    position: 'absolute',
                                 }}>
 
                                     {roundEnd ? 
@@ -493,7 +513,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                         return (
                             <div>
                                 <div
-                                className='table-text table-move'
+                                className='table-text table-character'
                                 style={{
                                     top: innerY,
                                     left: innerX,
@@ -503,8 +523,8 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                                 <div 
                                 className={`table-text table-character color-${cups[tablePlayer]}`}
                                 style={{
-                                    top: y,
-                                    left: x,
+                                    top: middleY,
+                                    left: middleX,
                                     opacity: tableDict[tablePlayer]['dice'] === 0 ? 0.5 : 1,
                                 }}>
                                     <h3>{tablePlayer} </h3>
@@ -529,7 +549,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                     return (
                         <div>
                             <div
-                                className='table-text table-move'
+                                className='table-text table-character'
                                 style={{
                                     top: innerY,
                                     left: innerX,
@@ -539,8 +559,8 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                             <div 
                             className={`table-text table-character color-${cups[tablePlayer]}`}
                             style={{
-                                top: y,
-                                left: x,
+                                top: middleY,
+                                left: middleX,
                                 opacity: tableDict[tablePlayer]['dice'] === 0 ? 0.5 : 1,
                             }}>
                                 <h3>{tablePlayer}</h3>
@@ -559,9 +579,11 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 }
                 else {
                     return (
-                        <div>
+                        <div
+                        style={{
+                        }}>
                             <div
-                            className='table-text table-move'
+                            className='table-text table-character'
                             style={{
                                 top: innerY,
                                 left: innerX,
@@ -571,8 +593,8 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                             <div 
                             className={`table-text table-character color-${cups[tablePlayer]}`}
                             style={{
-                                top: y,
-                                left: x,
+                                top: middleY,
+                                left: middleX,
                                 opacity: tableDict[tablePlayer]['dice'] === 0 ? 0.5 : 1,
                                 //border: '1px solid white',
                             }}>
@@ -781,44 +803,45 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
     return (
         <div
+        className='game-container'
         style={{
-            height: '100%',
-            width: '100%',
+            border: '1px solid white',
         }}>
 
+                
                 <div 
-                className='main-table-container'
+                className='table-container'
                 style={{
-                    //border: '1px solid white',
+                    border: '1px solid white',
                 }}>
-                    <div 
-                    className='table-container'
-                    style={{
-                        //border: '1px solid white',
-                    }}>
-                        {/* table image */} 
-                        <img 
-                        className='game-table'
-                        src='assets/table.png' alt='table'/>
-                        {/* render palifico alert */}
-                        { palifico && renderPalifico() }
-                        {/* render the end round display */}
-                        { roundEnd && renderEndRound() }
-                        {/* render the table */}
-                        { renderTable() }
-                    </div>
-
-
+                    {/* table image */} 
+                    <img 
+                    className='game-table'
+                    src='assets/table.png' alt='table'/>
+                    {/* render palifico alert */}
+                    { palifico && renderPalifico() }
+                    {/* render the end round display */}
+                    { roundEnd && renderEndRound() }
+                    {/* render the table */}
+                    { renderTable() }
                 </div>
 
-                <Chat 
-                gameID={gameID}
-                player={player}
-                table={table}
-                currentPlayer={currentPlayer}
-                roundHistory={roundHistory}
-                cups={cups}
-                />
+
+                <div 
+                className='chat-container'
+
+                >
+                    <Chat 
+                    gameID={gameID}
+                    player={player}
+                    table={table}
+                    currentPlayer={currentPlayer}
+                    roundHistory={roundHistory}
+                    cups={cups}
+                    />
+
+                </div>
+                
 
             </div>
     )

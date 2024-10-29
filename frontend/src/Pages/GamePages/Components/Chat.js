@@ -230,7 +230,7 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
 
     return (
         <div
-        className='main-chat-container'
+        className='chat-box'
         style={{
         }}
         onClick={() => inputRef.current && inputRef.current.focus()}>
@@ -256,7 +256,7 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
                 ref={inputRef}
                 className='chat-input'
                 type="text"
-                placeholder="..."
+                placeholder="type here..."
                 value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
                 onKeyDown={(e) => handleUserSubmit(e)}

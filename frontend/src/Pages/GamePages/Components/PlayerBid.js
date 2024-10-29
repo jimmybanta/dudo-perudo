@@ -168,9 +168,9 @@ const PlayerBid = ({ tableDict, sidesPerDie, palifico, roundHistory, currentPlay
 
     return (
         <div 
-        className='container flex-row'
+        className='container flex-row player-bid-row'
         style={{
-            gap: '10px',
+            position: 'relative',
         }}>
             <input
             className='bid-quantity text player-bid'
@@ -202,10 +202,8 @@ const PlayerBid = ({ tableDict, sidesPerDie, palifico, roundHistory, currentPlay
 
             {!roundStart && (
                 <div
-                style={{
-                    marginLeft: '5%',
-                    marginRight: '2%',
-                }}>or</div>
+                className='player-bid-or'
+                >or</div>
             )}
 
             {!roundStart && (

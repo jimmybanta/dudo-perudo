@@ -294,6 +294,13 @@ html, body {
   }
 }
 
+.header-container {
+  top: 0;
+  width: 100%;
+  padding-top: 2%;
+  position: fixed;
+}
+
 /* chat styling */
 
 .chat-box {
@@ -434,6 +441,12 @@ html, body {
 .end-round-text {
   font-size: calc(2rem + 1vw);
   user-select: none;
+}
+
+.header {
+  font-size: calc(1.5rem + 1vw); /* Relative font size */
+  user-select: none;
+  /* text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); */
 }
 
 

@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import PlayerBid from './Components/PlayerBid';
 import Chat from './Components/Chat';
+import Header from './Components/Header';
 
 import { apiCall } from '../../api';
 import { rollDice, sleep } from '../../utils'; 
@@ -434,7 +435,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         let outerRadius = 0;
 
         if (vw < 768) {
-            innerRadius = radius * 0.3;
+            innerRadius = radius * 0.4;
             middleRadius = radius * 0.65;
             outerRadius = radius * 0.92;
         }
@@ -812,14 +813,16 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         <div
         className='game-container'
         style={{
-            border: '1px solid white',
+            //border: '1px solid white',
         }}>
+
+                <Header />
 
                 
                 <div 
                 className='table-container'
                 style={{
-                    border: '1px solid white',
+                    //border: '1px solid white',
                 }}>
                     {/* table image */} 
                     <img 

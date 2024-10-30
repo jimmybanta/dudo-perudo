@@ -29,15 +29,28 @@ initialize_game: >
   to get the table conversation going.
   You'll be told the player starting the game - be sure to reference them, say something to them.
 
-move: >
-  A move has just been made - have the characters react to it, if it makes sense. 
+move_bid: >
+  A bid has just been made - have the characters react to it, if it makes sense. 
+  You'll be told the probability of the bid - use that to inform how they react. 
+  The higher the probability, the more likely the bid is to be true - and the safer the bid is.
+  The lower the probability, the bolder and riskier the bid is.
+  But don't have them mention the probabilities at all.
+  Limit it to only one or two messages.
+
+move_call: >
+  A player has just called a bid - have the characters react to it, if it makes sense. 
+  You'll be told the probability of them being right - use this to inform how they react to the decision to call.
+  The higher the probability, the smarter and safer the call was.
+  But don't have them mention the probabilities at all.
   Limit it to only one or two messages.
 
 end_round: >
   A round has just ended, and a character has lost a die. Have the characters react and respond, if it makes sense.
+  Limit it to only two or three messages.
 
 player_out: >
   A player has just lost all their dice and is out of the game. Have the characters react and respond, if it makes sense.
+  Limit it to only two or three messages.
 
 user_message: >
   The user has just sent a message. Have the characters respond to it, if it makes sense.

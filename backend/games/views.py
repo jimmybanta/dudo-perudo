@@ -16,6 +16,7 @@ from games.models import Game, Character
 from games.serializers import CharacterSerializer
 from perudo.round import run_round
 import perudo.logic as logic
+from perudo.logic.calculate_probs import calculate_prob
 
 from perudo.characters.characters import CHARACTERS
 
@@ -187,6 +188,7 @@ def get_chat_messages(request):
     round_history = request.data['round_history']
     message_history = request.data['message_history']
 
+    # these inputs may not be present
     try:
         palifico = request.data['palifico']
     except:
@@ -194,10 +196,12 @@ def get_chat_messages(request):
 
     try: 
         table_dict = request.data['table_dict']
+        total_dice = sum([int(table_dict[x]['dice']) for x in table_dict.keys()])
+        sides_per_die = request.data['sides_per_die']
     except:
-        table_dict = None
+        total_dice = None
+        sides_per_die = None
 
-    # these inputs may not be present
     try:
         starting_player = request.data['starting_player'] 
     except:
@@ -228,6 +232,22 @@ def get_chat_messages(request):
     ##      player_out - when a player is out of the game
     ##      user_message - when the user sends a message
     context = request.data['context']
+
+    prob = None
+
+    if context == 'move':
+
+        move = round_history[-1][1]
+
+        if move != 'call':
+            prob = calculate_prob(move, total_dice, palifico=palifico, sides_per_die=sides_per_die)
+
+            # if prob is within some range, we don't want any responses
+            # no need for responses to these reasonable bids - just clogs up the chat        
+            if prob > 0.25 and prob < 0.75:
+                return JsonResponse({'success': True})                
+
+
     
     # streaming responses
     current_message = ''
@@ -246,7 +266,10 @@ def get_chat_messages(request):
                     palifico=palifico,
                     player_out=player_out,
                     round_total=round_total,
-                    round_loser=round_loser
+                    round_loser=round_loser,
+                    bid_probability=prob,
+                    total_dice=total_dice,
+                    sides_per_die=sides_per_die,
                 ):
         
         # remove any newlines
@@ -284,7 +307,7 @@ def get_chat_messages(request):
                 message_dict['delay'] = message_delay + total_delay
 
             # if there's no text, then break
-            if not message_dict['text']:
+            if 'text' not in message_dict:
                 logger.info(f'No text in message: {message_dict}')
                 break
                 

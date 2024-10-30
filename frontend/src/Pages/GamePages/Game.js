@@ -831,6 +831,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                     roundTotal={roundTotal}
                     playerOut={playerOut}
                     cups={cups}
+                    sidesPerDie={sidesPerDie}
                     />
 
                 </div>

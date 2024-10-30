@@ -24,7 +24,7 @@ const reducer = (state, action) => {
     }
 };
 
-const Chat = ({ gameID, player, table, tableDict, currentPlayer, roundHistory, palifico, roundLoser, roundTotal, cups, playerOut }) => {
+const Chat = ({ gameID, player, table, tableDict, currentPlayer, roundHistory, palifico, roundLoser, roundTotal, cups, playerOut, sidesPerDie }) => {
     // a component for the chat
 
     // chat state
@@ -116,6 +116,7 @@ const Chat = ({ gameID, player, table, tableDict, currentPlayer, roundHistory, p
                         round_history: roundHistory,
                         message_history: state.history,
                         palifico: palifico,
+                        sides_per_die: sidesPerDie,
                     }
                 });
 

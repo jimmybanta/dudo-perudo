@@ -20,7 +20,7 @@ const Play = ({ onSetCurrentPage }) => {
 
     // temp setup
 
-    const [dicePerPlayer, setDicePerPlayer] = useState(5);
+    const [dicePerPlayer, setDicePerPlayer] = useState(2);
 
     const [player, setPlayer] = useState('crespin');
     const [gameID, setGameID] = useState(59);

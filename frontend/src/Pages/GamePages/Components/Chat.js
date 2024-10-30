@@ -24,7 +24,7 @@ const reducer = (state, action) => {
     }
 };
 
-const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
+const Chat = ({ gameID, player, table, tableDict, currentPlayer, roundHistory, palifico, roundLoser, roundTotal, cups, playerOut }) => {
     // a component for the chat
 
     // chat state
@@ -32,9 +32,10 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
 
     const [userMessage, setUserMessage] = useState('');
 
+    const [playersOut, setPlayersOut] = useState([]); // keeps track of players who are out of the game
+
     const containerRef = useRef(null);
     const inputRef = useRef(null);
-
 
 
 
@@ -55,10 +56,9 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
                     player: player,
                     table: table,
                     context: 'initialize_game',
-                    current_player: currentPlayer,
+                    starting_player: currentPlayer,
                     round_history: roundHistory,
                     message_history: state.history,
-                    user_message: null,
                 }
             });
 
@@ -111,12 +111,11 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
                         game_id: gameID,
                         player: player,
                         table: table,
+                        table_dict: tableDict,
                         context: 'move',
-                        user_message: null,
                         round_history: roundHistory,
                         message_history: state.history,
-
-                        current_player: null,
+                        palifico: palifico,
                     }
                 });
 
@@ -128,12 +127,121 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
             };
 
             loadMoveComments();
-            //console.log(roundHistory);
 
         }
 
     }, [roundHistory]);
 
+    // for the end of a round
+    // also if a player is out
+    useEffect(() => {
+
+        // if these three are true, we're at the end of a round
+        if (roundLoser && roundTotal && roundHistory) {
+            
+            // if a player is newly out
+            if (playerOut && !playersOut.includes(playerOut)) {
+
+                const loadPlayerOutComments = async () => {
+
+                    const [commentsSuccess, commentsResp] = await apiCall({
+                        method: 'post',
+                        url: `/games/get_chat_messages/`,
+                        data: {
+                            game_id: gameID,
+                            player: player,
+                            table: table,
+                            context: 'player_out',
+                            round_history: roundHistory,
+                            message_history: state.history,
+                            player_out: playerOut,
+                        }
+                    });
+    
+                    if (!commentsSuccess) {
+                        alert(commentsResp);
+                        return;
+                    }
+    
+                }
+    
+                loadPlayerOutComments();
+
+                setPlayersOut([...playersOut, playerOut]);
+
+            }
+
+            // otherwise, we're at the end of a round but no one is out
+            else {
+                const loadEndRoundComments = async () => {
+                    
+                    const [commentsSuccess, commentsResp] = await apiCall({
+                        method: 'post',
+                        url: `/games/get_chat_messages/`,
+                        data: {
+                            game_id: gameID,
+                            player: player,
+                            table: table,
+                            context: 'end_round',
+                            round_history: roundHistory,
+                            message_history: state.history,
+                            palifico: palifico,
+                            round_loser: roundLoser,
+                            round_total: roundTotal,
+                        }
+                    });
+    
+                    if (!commentsSuccess) {
+                        alert(commentsResp);
+                        return;
+                    }
+    
+                }
+
+                loadEndRoundComments();
+
+            }
+            
+        }
+
+        
+    
+    }, [roundLoser, roundTotal, roundHistory]);
+
+
+    // for when a new player is out
+    useEffect(() => {
+
+        if (playerOut) {
+
+            const loadPlayerOutComments = async () => {
+
+                const [commentsSuccess, commentsResp] = await apiCall({
+                    method: 'post',
+                    url: `/games/get_chat_messages/`,
+                    data: {
+                        game_id: gameID,
+                        player: player,
+                        table: table,
+                        context: 'player_out',
+                        round_history: roundHistory,
+                        message_history: state.history,
+                        player_out: playerOut,
+                    }
+                });
+
+                if (!commentsSuccess) {
+                    alert(commentsResp);
+                    return;
+                }
+
+            }
+
+            loadPlayerOutComments();
+
+        }
+
+    }, [playerOut]);
 
     // for when the chat queue changes
     useEffect(() => {
@@ -159,32 +267,13 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
     // for when the chat history changes
     useEffect(() => {
 
+        // scroll to the bottom
         if (containerRef.current) {
             containerRef.current.scrollTop = containerRef.current.scrollHeight;
         }
 
     }, [state.history]);
 
-    const renderHistory = () => {
-
-        return state.history.map((message, index) => {
-
-            return (
-                <div 
-                className={`chat-message color-${cups[message.writer]}`}
-                key={index}>
-                    <span
-                    style={{
-                        fontWeight: 'bold',
-                    }}>[{message.writer}]:&nbsp;
-                    </span>
-                    <span>
-                        {message.text}
-                    </span>
-                </div>
-            );
-        });
-    };
 
     const handleUserSubmit = async (e) => {
 
@@ -212,7 +301,8 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
                     context: 'user_message',
                     round_history: roundHistory,
                     message_history: state.history,
-                    current_player: currentPlayer,
+                    starting_player: currentPlayer,
+                    palifico: palifico,
                 }
             });
 
@@ -228,6 +318,28 @@ const Chat = ({ gameID, player, table, currentPlayer, roundHistory, cups }) => {
     };
 
 
+    const renderHistory = () => {
+
+        return state.history.map((message, index) => {
+
+            return (
+                <div 
+                className={`chat-message color-${cups[message.writer]}`}
+                key={index}>
+                    <span
+                    style={{
+                        fontWeight: 'bold',
+                    }}>[{message.writer}]:&nbsp;
+                    </span>
+                    <span>
+                        {message.text}
+                    </span>
+                </div>
+            );
+        });
+    };
+
+    
     return (
         <div
         className='chat-box'

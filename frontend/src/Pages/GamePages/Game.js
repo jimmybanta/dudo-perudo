@@ -27,8 +27,9 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
     const [roundLoser, setRoundLoser] = useState(null); // the loser of the round
     const [roundTotal, setRoundTotal] = useState(null); // the total of the specific value that was lifted on
 
-    // a dictionary to decide whose dice is shown
-    const [showDice, setShowDice] = useState(playShowDice);
+    const [showDice, setShowDice] = useState(playShowDice); // a dictionary to decide 
+
+    const [playerOut, setPlayerOut] = useState(null); // the latest player out of the game
 
     // refs
     const tableDictRef = useRef(tableDict);
@@ -36,8 +37,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
     // whenever currentPlayer changes
     useEffect(() => {
-
-        console.log('currentPlayer:', currentPlayer);
 
         const handleAIMove = async () => {
 
@@ -141,6 +140,9 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         if (roundHistory.length === 0) {
             return [null, null];
         }
+        if (roundHistory[roundHistory.length - 1][1] === 'call') {
+            return roundHistory[roundHistory.length - 2];
+        }
 
         return roundHistory[roundHistory.length - 1];
 
@@ -205,7 +207,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
         // starting at the current player, go around the table and show all the dice
         const callingPlayer = currentPlayer;
-
+ 
         // reorganize the table so that the current player is first
         let tempTable = [...table];
         tempTable = tempTable.slice(table.indexOf(callingPlayer)).concat(tempTable.slice(0, table.indexOf(callingPlayer)));
@@ -214,6 +216,10 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
         // get the last player and their bid
         const [lastPlayer, lastBid] = getLastPlayerBid();
+
+        // add the call to the round history
+        const newRoundHistory = [...roundHistory, [callingPlayer, 'call']];
+        setRoundHistory(newRoundHistory);
 
         setRoundEnd(true);
 
@@ -272,15 +278,16 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
         setCurrentPlayer(null);
 
-        // add the call to the round history
-        const newRoundHistory = [...roundHistory, [callingPlayer, 'call']];
-        setRoundHistory(newRoundHistory);
-
         // score the bid
         const [correct, total] = scoreBid(lastBid);
 
         // determine the loser
         const loser = correct ? currentPlayer : lastPlayer;
+
+        // determine if the loser is out
+        if (tableDict[loser]['dice'] === 1) {
+            setPlayerOut(loser);
+        }
 
         // clear the shown dice
         let tempShowDice = {...showDice};
@@ -292,7 +299,8 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         setRoundLoser(loser);
 
         // update the round in the backend 
-        apiCall({
+        //// currently not doing this - no need to store game histories in the database for now, I don't think
+        /* apiCall({
             method: 'post',
             url: '/games/end_round/',
             data: {
@@ -303,7 +311,7 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                 total: total,
                 game_id: gameID
             }
-        });
+        }); */
 
         // wait a bit before transitioning to the next round
         await sleep(2000);
@@ -421,8 +429,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
 
         let vw = document.documentElement.clientWidth;
         let vh = document.documentElement.clientHeight;
-
-        console.log(vw, vh);
 
         const centerX = (vw < 768) ? (vw / 2) : ((vw / 10) * 3);
         const centerY = (vw < 768) ? ((vh / 10) * 3) : (vh / 2);
@@ -618,7 +624,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
             )
         )
     };
-
     // renders at the end of a round - to display the loser and the total
     const renderEndRound = () => {
 
@@ -653,7 +658,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         }
 
     };
-
     // renders the palifico signal/alert
     const renderPalifico = () => {
 
@@ -663,7 +667,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
             </div>
         )
     };
-
     // renders the thinking animation
     const renderThinking = () => {
 
@@ -681,7 +684,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
             </div>
         )
     };
-
     // renders either a cup or dice
     const renderCupDice = (tablePlayer) => {
 
@@ -737,7 +739,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
         
 
     };
-
     // renders a hand of dice
     const renderDice = (diceValues) => {
 
@@ -786,29 +787,6 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
     };
 
 
-
-
-    const test = () => {
-
-
-    };
-
-    const renderHands = () => {
-
-        return (
-            table.map((tablePlayer) => {
-
-                return (
-                    <div>
-                        <h3>{tablePlayer}: {tableDict[tablePlayer]['hand']}</h3>
-                    </div>
-                )
-
-            })
-        )
-    }
-
-
     return (
         <div
         className='game-container'
@@ -845,8 +823,13 @@ const Game = ({ player, gameID, table, playTableDict, playCurrentPlayer, sidesPe
                     gameID={gameID}
                     player={player}
                     table={table}
+                    tableDict={tableDict}
                     currentPlayer={currentPlayer}
                     roundHistory={roundHistory}
+                    palifico={palifico}
+                    roundLoser={roundLoser}
+                    roundTotal={roundTotal}
+                    playerOut={playerOut}
                     cups={cups}
                     />
 

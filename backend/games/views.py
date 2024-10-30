@@ -140,7 +140,7 @@ def get_move(request):
 
     ## to do - add pausing/thinking time logic
     # time in milliseconds
-    pause = 1000
+    pause = 5000
     
     return JsonResponse({'move': move, 'pause': pause})
     
@@ -155,21 +155,6 @@ def end_round(request):
     total = request.data['total']
 
     game_id = request.data['game_id']
-
-    """ # first, score the bid 
-
-    last_bid = round_history[-2][1]
-
-    hands = [table_dict[key]['hand'] for key in table_dict.keys()]
-    all_dice = [die for hand in hands for die in hand]
-    
-    score = logic.score.score(last_bid, all_dice, palifico=palifico)
-
-    correct = score[0]
-    total = score[1]
-
-    # determine who loses a die
-    loser = round_history[-1][0] if correct else round_history[-2][0] """
 
     # create the round_dict
     # this is a dictionary with all info about the round - hands, moves, loser
@@ -188,12 +173,6 @@ def end_round(request):
     else:
         game.history = [round_dict]
     game.save()
-    
-    """ # then, return the loser and the total to the frontend
-    data_to_return = {
-        'loser': loser,
-        'total': total,
-    } """
 
     return JsonResponse({'success': True})
 
@@ -201,23 +180,54 @@ def end_round(request):
 def get_chat_messages(request):
     '''Generates chat messages for a game.'''
 
+    # these inputs will always be present
     game_id = request.data['game_id']
     player = request.data['player']
     table = request.data['table']
     round_history = request.data['round_history']
     message_history = request.data['message_history']
-    starting_player = request.data['current_player'] 
-    user_message = request.data['user_message']
+
+    try:
+        palifico = request.data['palifico']
+    except:
+        palifico = False
+
+    try: 
+        table_dict = request.data['table_dict']
+    except:
+        table_dict = None
+
+    # these inputs may not be present
+    try:
+        starting_player = request.data['starting_player'] 
+    except:
+        starting_player = None
+
+    try:
+        round_total = request.data['round_total']
+        round_loser = request.data['round_loser']
+    except:
+        round_total = None
+        round_loser = None
+
+    try:
+        user_message = request.data['user_message']
+    except:
+        user_message = None
+
+    try:
+        player_out = request.data['player_out']
+    except:
+        player_out = None
 
     # context
     ## either: 
     ##      initialize_game - at the beginning of a game
     ##      move - during a round
+    ##      end_round - the end of a round, when someone loses a die
+    ##      player_out - when a player is out of the game
     ##      user_message - when the user sends a message
     context = request.data['context']
-
-    if context == 'intialize_game':
-        pass
     
     # streaming responses
     current_message = ''
@@ -232,7 +242,11 @@ def get_chat_messages(request):
                     table=table,
                     player=player,
                     stream=True,
-                    starting_player=starting_player
+                    starting_player=starting_player,
+                    palifico=palifico,
+                    player_out=player_out,
+                    round_total=round_total,
+                    round_loser=round_loser
                 ):
         
         # remove any newlines
@@ -247,6 +261,14 @@ def get_chat_messages(request):
             start_point = current_message.index('{')
             break_point = current_message.index('}') + 1
             message_dict = json.loads(current_message[start_point:break_point])
+
+            # don't let it return messages by the player
+            ## this is a mistake
+            try:
+                if message_dict['writer'] == player:
+                    break
+            except:
+                break
 
             # if it doesn't have a delay, then set it to 0
             try:

@@ -124,6 +124,8 @@ def get_move(request):
 
     logger.info(f'Getting move for {current_player}')
 
+    hand = table_dict[current_player]['hand']
+
     # note - could be used later, if we want to incorporate game history into AI moves
     game_history = request.data['game_history']
 
@@ -134,14 +136,14 @@ def get_move(request):
     # get the move from the AI player
     ## case 1 - round is underway
     if round_history:
-        move = current_player_obj.move(round_history, game_history, total_dice, palifico=palifico)
+        move, pause = current_player_obj.move(hand, round_history, game_history, total_dice, palifico=palifico)
     ## case 2 - round is starting
     else:
-        move = current_player_obj.starting_bid(total_dice, palifico=palifico)
+        move, pause = current_player_obj.starting_bid(hand, total_dice, palifico=palifico)
 
-    ## to do - add pausing/thinking time logic
+    """ ## to do - add pausing/thinking time logic
     # time in milliseconds
-    pause = 5000
+    pause = 5000 """
     
     return JsonResponse({'move': move, 'pause': pause})
     

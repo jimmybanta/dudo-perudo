@@ -4,6 +4,7 @@ import random
 from perudo.hand import Hand
 from perudo.logic.legal_bids import legal_bids, legal_starting_bids
 from perudo.local_game.utils import input_int
+from perudo.player.move import choose_bid, decide_call
 
 class Player:
     '''A player in a game of Perudo.
@@ -119,22 +120,17 @@ class AIPlayer(Player):
 class AIRandomPlayer(AIPlayer):
     '''An AI player that plays completely randomly.'''
 
-    def starting_bid(self, total_dice, palifico=False):
+    def starting_bid(self, hand, total_dice, palifico=False):
         '''Randomly selects a bid from all possible allowed starting bids.'''
 
         allowed_bids = legal_starting_bids(total_dice=total_dice, 
                                            sides_per_die=self.sides_per_die,
                                            palifico=palifico)
 
-        return random.choice(allowed_bids)
-
-    def starting_direction(self, players, palifico=False):
-        '''Randomly selects a direction.'''
-
-        return random.choice(['up', 'down'])
+        return random.choice(allowed_bids), 1000
 
     
-    def move(self, round_history, game_history, total_dice, palifico=False):
+    def move(self, hand, round_history, game_history, total_dice, palifico=False):
         '''Randomly chooses to call (prob .25) or to bid (prob .75). 
         If bidding, randomly selects a bid from all allowed bids.'''
 
@@ -142,7 +138,7 @@ class AIRandomPlayer(AIPlayer):
 
         # 25% chance of calling
         if n < 0.25:
-            return 'call'
+            return 'call', 5000
 
         # 75% chance of bidding
         allowed_bids = legal_bids(round_history[-1][1], total_dice, 
@@ -152,10 +148,72 @@ class AIRandomPlayer(AIPlayer):
         
         # if there are no legal bids to make, then call
         if not allowed_bids:
-            return 'call'
+            return 'call', 5000
 
         # otherwise, randomly select a bid
-        return random.choice(allowed_bids)
+        return random.choice(allowed_bids), 5000
+
+class AISmartPlayer(AIPlayer):
+    ''' An AI Player designed to play intelligently.'''
+
+    def __init__(self, 
+                 name=None, 
+                 num_dice=5, 
+                 sides_per_die=6):
+        super().__init__(name=name, num_dice=num_dice, sides_per_die=sides_per_die)
+
+        # the probability any of your bets need to have to be eligible
+        self.betting_prob = .5
+        # the probability that an incoming bet has to clear for you to raise the bet
+        self.calling_prob = .5
+
+        # the probability that a bid needs to clear to start the round
+        self.starting_prob = .75
+        self.starting_straight_prob = .9
+
+        # a range of time to take before making a move
+        self.starting_pause = [500, 1500]
+
+
+
+    def starting_bid(self, hand, total_dice, palifico=False):
+        '''Randomly selects a bid from all possible allowed starting bids.'''
+
+        allowed_bids = legal_starting_bids(total_dice=total_dice, 
+                                           sides_per_die=self.sides_per_die,
+                                           palifico=palifico)
+                
+        starting_prob = self.starting_prob if not palifico else self.starting_straight_prob
+
+        bid = choose_bid(hand, allowed_bids, total_dice, starting_prob, palifico=palifico)
+
+        return bid, random.randint(*self.starting_pause)
+        
+    def move(self, hand, round_history, game_history, total_dice, palifico=False):
+        ''' 
+
+        '''
+
+        last_bid = round_history[-1][1]
+
+        if decide_call(hand, last_bid, total_dice, self.calling_prob, palifico=palifico):
+            return 'call', random.randint(*self.starting_pause)
+        
+        allowed_bids = legal_bids(round_history[-1][1], total_dice, 
+                                  sides_per_die=self.sides_per_die,
+                                  palifico=palifico,
+                                  ex_palifico=self.ex_palifico)
+        
+        bid = choose_bid(hand, allowed_bids, total_dice, self.betting_prob, palifico=palifico)
+
+        return bid, random.randint(*self.starting_pause)
+
+
+
+
+
+    
+
 
 if __name__ == '__main__':
 

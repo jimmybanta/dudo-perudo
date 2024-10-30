@@ -4,7 +4,7 @@ for testing out game logic.'''
 import random
 import math
 
-from perudo.local_game.player import AIPlayer, HumanPlayer, AIRandomPlayer
+from perudo.player.player import AIPlayer, HumanPlayer, AIRandomPlayer
 
 from perudo.logic.score import score
 

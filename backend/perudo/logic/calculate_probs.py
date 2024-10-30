@@ -24,9 +24,11 @@ def calculate_prob(bid, total_dice,
     '''
 
     # unpack the bid
-    quantity, _ = bid
+    quantity, value = bid
 
-    # value is irrelevant for the probability calculation
+    # straight is when we don't double count wilds
+    # this is when palifico, or when the value is 1
+    straight = True if (value == 1 or palifico) else False
 
     # calculate the total combinations
     total_combinations = sides_per_die ** total_dice
@@ -40,10 +42,10 @@ def calculate_prob(bid, total_dice,
         # we're calculating the total combinations in which there are k of a certain value,
         # given total_dice dice
         
-        # if it's palifico, then there are no wilds
-        if palifico:
+        # don't want to count wilds
+        if straight:
             running_combinations += comb(total_dice, k) * ((sides_per_die - 1) ** (total_dice - k))
-        # if it's not palifico, then there are wilds
+        # there are wilds
         # and we need to take that into account
         else:
             running_combinations += comb(total_dice, k) * ((sides_per_die - 2) ** (total_dice - k)) * (2 ** k)

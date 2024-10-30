@@ -282,6 +282,11 @@ def get_chat_messages(request):
             # otherwise, add the total delay on
             else:
                 message_dict['delay'] = message_delay + total_delay
+
+            # if there's no text, then break
+            if not message_dict['text']:
+                logger.info(f'No text in message: {message_dict}')
+                break
                 
             send_event(f'game-{game_id}', 'message', message_dict)
         

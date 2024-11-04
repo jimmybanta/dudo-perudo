@@ -162,14 +162,24 @@ class AISmartPlayer(AIPlayer):
                  sides_per_die=6):
         super().__init__(name=name, num_dice=num_dice, sides_per_die=sides_per_die)
 
-        # the probability any of your bets need to have to be eligible
+        # the probability that a bid needs to clear to be eligible to play
+        ## the lower this is, the bolder the player
         self.betting_prob = .5
-        # the probability that an incoming bet has to clear for you to raise the bet
+
+        # the probability that an incoming bid has to clear for you to raise the bet
+        ## the lower this is, the more likely the player is to raise the bet 
+        ## in other words, the more aggressive the player
         self.calling_prob = .5
 
-        # the probability that a bid needs to clear to start the round
+        # the probability that a bid needs to clear to start a normal round
         self.starting_prob = .75
-        self.starting_straight_prob = .9
+        # the probability that a bid needs to clear to start a palifico round
+        self.starting_palifico_prob = .9
+
+        # how much to blur the probability
+        ## aka how much uncertainty to add to the player's probability calculations
+        ## to simulate human-like play when unable to calculate exact probabilities
+        self.probability_blur = 0.2
 
         # a range of time to take before making a move
         self.starting_pause = [500, 1500]
@@ -183,20 +193,31 @@ class AISmartPlayer(AIPlayer):
                                            sides_per_die=self.sides_per_die,
                                            palifico=palifico)
                 
-        starting_prob = self.starting_prob if not palifico else self.starting_straight_prob
+        starting_prob = self.starting_prob if not palifico else self.starting_palifico_prob
 
-        bid = choose_bid(hand, allowed_bids, total_dice, starting_prob, palifico=palifico)
+        # calculate the probability blur
+        blur = random.uniform(-self.probability_blur, self.probability_blur)
+
+        bid = choose_bid(hand, allowed_bids, total_dice, starting_prob, palifico=palifico, 
+                         blur=blur)
 
         return bid, random.randint(*self.starting_pause)
         
     def move(self, hand, round_history, game_history, total_dice, palifico=False):
         ''' 
 
+        To do: 
+        incoporate probablity blur
+        incorporate bluffing
+
         '''
 
         last_bid = round_history[-1][1]
 
-        if decide_call(hand, last_bid, total_dice, self.calling_prob, palifico=palifico):
+        # calculate the probability blur
+        blur = random.uniform(-self.probability_blur, self.probability_blur)
+
+        if decide_call(hand, last_bid, total_dice, self.calling_prob, palifico=palifico, blur=blur):
             return 'call', random.randint(*self.starting_pause)
         
         allowed_bids = legal_bids(round_history[-1][1], total_dice, 
@@ -204,7 +225,8 @@ class AISmartPlayer(AIPlayer):
                                   palifico=palifico,
                                   ex_palifico=self.ex_palifico)
         
-        bid = choose_bid(hand, allowed_bids, total_dice, self.betting_prob, palifico=palifico)
+        bid = choose_bid(hand, allowed_bids, total_dice, self.betting_prob, palifico=palifico, 
+                         blur=blur)
 
         return bid, random.randint(*self.starting_pause)
 

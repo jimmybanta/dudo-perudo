@@ -678,10 +678,13 @@ html, body {
 
 
 .setup-char-name {
+  display: flex;
   font-size: calc(1rem + 0.5vw); /* Relative font size */
   user-select: none;
-  width: 25;
+  width: 25%;
   text-align: left;
+  justify-content: end;
+  padding-right: 10%;
 }
 
 @media (max-width: 768px) {

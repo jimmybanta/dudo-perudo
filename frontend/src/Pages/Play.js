@@ -20,7 +20,7 @@ const Play = ({ onSetCurrentPage }) => {
 
     // temp setup
 
-    const [dicePerPlayer, setDicePerPlayer] = useState(2);
+    /* const [dicePerPlayer, setDicePerPlayer] = useState(2);
 
     const [player, setPlayer] = useState('crespin');
     const [gameID, setGameID] = useState(59);
@@ -55,12 +55,12 @@ const Play = ({ onSetCurrentPage }) => {
         'theo': false,
     });
 
-    const [setupComplete, setSetupComplete] = useState(true);
+    const [setupComplete, setSetupComplete] = useState(true); */
 
 
     //// Setup variables
 
-    /* const [player, setPlayer] = useState(null); // the player's name
+    const [player, setPlayer] = useState(null); // the player's name
     const [table, setTable] = useState([]); // the table of players
     const [dicePerPlayer, setDicePerPlayer] = useState(null); // the number of dice per player
     const [sidesPerDie, setSidesPerDie] = useState(null); // the number of sides per die
@@ -79,7 +79,7 @@ const Play = ({ onSetCurrentPage }) => {
     const [tableDict, setTableDict] = useState({});
 
     // currentPlayer is the player whose turn it is
-    const [currentPlayer, setCurrentPlayer] = useState(null); */
+    const [currentPlayer, setCurrentPlayer] = useState(null);
     
 
 

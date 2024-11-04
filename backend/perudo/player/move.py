@@ -1,10 +1,11 @@
 ''' Contains functions that AI players use to make moves in a game of Perudo. '''
 
+import random
 from perudo.logic.calculate_probs import calculate_prob
 
 
 
-def choose_bid(hand, options, total_dice, min_probability, palifico=False):
+def choose_bid(hand, options, total_dice, min_probability, palifico=False, blur=0):
     ''' Uses binary search to identify the bid that is closest to a probability threshold. '''
 
     # get the total dice outside of the player's hand
@@ -33,7 +34,17 @@ def choose_bid(hand, options, total_dice, min_probability, palifico=False):
 
         # calculate the probability of the bid
         # taking into account the player's hand
+
+
         prob = calculate_prob((option[0] - to_remove, option[1]), total_dice_exclusive, palifico=False, sides_per_die=6)
+
+        # add the blur to the probability
+        prob += blur
+        
+        if prob > 1:
+            prob = 1
+        elif prob < 0:
+            prob = 0
 
         if prob > min_probability:
             current_min = current_index
@@ -44,7 +55,7 @@ def choose_bid(hand, options, total_dice, min_probability, palifico=False):
 
     return option
 
-def decide_call(hand, bid, total_dice, min_probability, palifico=False):
+def decide_call(hand, bid, total_dice, min_probability, palifico=False, blur=0):
     ''' Decides whether to call or to bid. '''
 
     # get the total dice outside of the player's hand
@@ -54,9 +65,15 @@ def decide_call(hand, bid, total_dice, min_probability, palifico=False):
     if not palifico and bid[1] != 1:
         to_remove += hand.count(1)
 
-
     # calculate the probability of the bid
     # taking into account the player's hand
     prob = calculate_prob((bid[0] - to_remove, bid[1]), total_dice_exclusive, palifico=False, sides_per_die=6)
-    
+
+    # add the blur to the probability
+    prob += blur
+    if prob > 1:
+        prob = 1
+    elif prob < 0:
+        prob = 0
+
     return True if prob < min_probability else False

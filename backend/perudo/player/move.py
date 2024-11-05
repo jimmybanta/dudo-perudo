@@ -2,6 +2,8 @@
 
 import random
 from perudo.logic.calculate_probs import calculate_prob
+from perudo.hand import Hand
+
 
 
 
@@ -77,3 +79,57 @@ def decide_call(hand, bid, total_dice, min_probability, palifico=False, blur=0):
         prob = 0
 
     return True if prob < min_probability else False
+
+def create_bluff_hand(hand, bluff_value, bluffing_intensity=0.5, palifico=False, sides_per_die=6):
+    '''
+    Creates a bluff hand by changing the values of the dice.
+    '''
+
+
+    # we need to create a dummy hand that incorporates a bluff
+            
+    # determine how many dice they'll bluff about
+    bluff_quantity = int(bluffing_intensity * len(hand))
+
+    # create the dummy hand
+    dummy_hand = [bluff_value for _ in range(bluff_quantity)]
+
+    for _ in range(len(hand) - bluff_quantity):
+
+        # get a random value that isn't the bluff value
+        value = None
+        while value == None or value == bluff_value:
+            value = random.randint(1, sides_per_die)
+        
+        # add it to the hand
+        dummy_hand.append(value)
+        
+        
+    return Hand(size=len(dummy_hand), sides_per_die=sides_per_die, values=sorted(dummy_hand))
+
+
+def choose_bluff_value(round_history, palifico=False, sides_per_die=6):
+    '''
+    '''
+
+    if not round_history:
+        
+        if palifico:
+            return random.randint(1, sides_per_die)
+        else:
+            return random.randint(2, sides_per_die)
+
+    previous_bid_values = [x[1][1] for x in round_history]
+
+    # get the most common value(s)
+    counts = {x: previous_bid_values.count(x) for x in set(previous_bid_values)}
+    max_count = max(counts.values())
+
+    # if there's a tie, choose randomly
+    max_values = [x for x in counts.keys() if counts[x] == max_count]
+    print('max_values: ', max_values)
+    bluff_value = random.choice(max_values)
+
+    return bluff_value
+    
+

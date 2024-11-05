@@ -1,10 +1,11 @@
 
 import random
+from collections import Counter
 
 from perudo.hand import Hand
 from perudo.logic.legal_bids import legal_bids, legal_starting_bids
 from perudo.local_game.utils import input_int
-from perudo.player.move import choose_bid, decide_call
+from perudo.player.move import choose_bid, decide_call, create_bluff_hand, choose_bluff_value
 
 class Player:
     '''A player in a game of Perudo.
@@ -181,6 +182,12 @@ class AISmartPlayer(AIPlayer):
         ## to simulate human-like play when unable to calculate exact probabilities
         self.probability_blur = 0.2
 
+        # the probability that the player will bluff about their bid
+        self.bluffing_prob = 0.25
+        # the intensity of their bluffing
+        ## the higher, the more of their dice they'll bluf about, essentially
+        self.bluffing_intensity = 0.6
+
         # a range of time to take before making a move
         self.starting_pause = [500, 1500]
 
@@ -198,6 +205,19 @@ class AISmartPlayer(AIPlayer):
         # calculate the probability blur
         blur = random.uniform(-self.probability_blur, self.probability_blur)
 
+        # determine if they'll be bluffing
+        if random.random() < self.bluffing_prob:
+
+            # randomly choose the value they'll bluff about
+            # (as this is the starting bid, so there's no information to go off of)
+            if palifico:
+                bluff_value = random.randint(1, self.sides_per_die)
+            else:
+                bluff_value = random.randint(2, self.sides_per_die)
+
+            hand = create_bluff_hand(hand, bluff_value, bluffing_intensity=self.bluffing_intensity, sides_per_die=self.sides_per_die)
+            
+
         bid = choose_bid(hand, allowed_bids, total_dice, starting_prob, palifico=palifico, 
                          blur=blur)
 
@@ -205,10 +225,6 @@ class AISmartPlayer(AIPlayer):
         
     def move(self, hand, round_history, game_history, total_dice, palifico=False):
         ''' 
-
-        To do: 
-        incoporate probablity blur
-        incorporate bluffing
 
         '''
 
@@ -224,6 +240,14 @@ class AISmartPlayer(AIPlayer):
                                   sides_per_die=self.sides_per_die,
                                   palifico=palifico,
                                   ex_palifico=self.ex_palifico)
+        
+        # determine if they'll be bluffing
+        if random.random() < self.bluffing_prob:
+
+            # choose the bluff value based on the round history
+            bluff_value = choose_bluff_value(round_history, palifico=palifico, sides_per_die=self.sides_per_die)
+
+            hand = create_bluff_hand(hand, bluff_value, bluffing_intensity=self.bluffing_intensity, sides_per_die=self.sides_per_die)
         
         bid = choose_bid(hand, allowed_bids, total_dice, self.betting_prob, palifico=palifico, 
                          blur=blur)

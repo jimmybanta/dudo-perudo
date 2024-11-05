@@ -127,7 +127,6 @@ def choose_bluff_value(round_history, palifico=False, sides_per_die=6):
 
     # if there's a tie, choose randomly
     max_values = [x for x in counts.keys() if counts[x] == max_count]
-    print('max_values: ', max_values)
     bluff_value = random.choice(max_values)
 
     return bluff_value

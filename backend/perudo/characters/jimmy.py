@@ -15,7 +15,7 @@ class Jimmy(AISmartPlayer):
 
         self.probability_blur = 0.15
 
-        # jimmy bluffs a big
+        # jimmy bluffs a bit
         self.bluffing_prob = 0.4
         self.bluffing_intensity = 0.5
 

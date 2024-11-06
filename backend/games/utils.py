@@ -1,6 +1,5 @@
 ''' Contains utility functions for the games app. '''
 
-import os
 import yaml
 import logging
 
@@ -26,6 +25,14 @@ def load_yaml(file):
     return data
 
 def format_message_history(message_history):
+    '''
+    Formats a list of messages into a readable string.
+    
+    Parameters
+    ----------
+    message_history : list
+        A list of messages.
+    '''
 
     final_str = ''
 
@@ -43,6 +50,17 @@ def format_message_history(message_history):
 def format_bid(quantity, value, singular=False, palifico=False):
     '''
     Formats a tuple move into a readable string.
+
+    Parameters
+    ----------
+    quantity : int
+        The quantity of dice.
+    value : int
+        The value of the dice.
+    singular : bool
+        Whether to use singular or plural.
+    palifico : bool
+        Whether the bid is palifico.
     '''
 
     value_dict = {

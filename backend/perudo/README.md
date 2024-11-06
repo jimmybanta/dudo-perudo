@@ -29,3 +29,13 @@ Palifico - a special round where 1's are not wild
 ## Formatting
 
 Bid - a bid is a tuple of (quantity, value), where quantity is the number of dice of value that the player is claiming are on the table
+
+
+## characters
+Contains the characters for the game
+## local_game
+Contains the game logic for a local game of perudo
+## logic
+Contains various functions relating to the game logic
+## player
+Contains the player class and related functions

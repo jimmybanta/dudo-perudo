@@ -133,7 +133,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = '/var/www/dudoperudo/static'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -143,9 +148,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
+CSRF_TRUSTED_ORIGINS = ['https://*.dudoperudo.com']
+
+# configure allowed hosts and origins
+if config.ENV == 'DEV':
+    ALLOWED_HOSTS = ['*']
+
+    CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
+
+elif config.ENV == 'STAG':
+    ALLOWED_HOSTS = ['api-stag.dudoperudo.com', 'www.api-stag.dudoperudo.com',
+                '127.0.0.1', 'localhost']
+    
+    CORS_ALLOWED_ORIGINS = ['https://*.dudoperudo.com', 'https://staging.dudoperudo.com']
+    
+elif config.ENV == 'PROD':
+    ALLOWED_HOSTS = ['api.dudoperudo.com', 'www.api.dudoperudo.com']
+
+    CORS_ALLOWED_ORIGINS = ['https://*.dudoperudo.com', 'https://dudoperudo.com']
 
 # configure logging
 if config.ENV == 'DEV':
+
     LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

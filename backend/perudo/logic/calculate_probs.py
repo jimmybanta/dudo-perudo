@@ -1,4 +1,4 @@
-''' Holds functions for calculating probabilities. '''
+''' Holds functions for calculating probabilities of bids. '''
 
 from math import comb
 import itertools as it
@@ -58,6 +58,9 @@ def calculate_prob(bid, total_dice,
 
 # for validating out the combinatorics method
 def calculate_prob_brute(bid, total_dice):
+    '''
+    Calculates the probability of a bid being correct, using a brute force method.
+    '''
 
     iter = it.product([1, 2, 3, 4, 5, 6], repeat=total_dice)
 

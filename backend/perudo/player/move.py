@@ -2,13 +2,29 @@
 
 import random
 from perudo.logic.calculate_probs import calculate_prob
-from perudo.hand import Hand
+from perudo.logic.hand import Hand
 
 
 
 
 def choose_bid(hand, options, total_dice, min_probability, palifico=False, blur=0):
-    ''' Uses binary search to identify the bid that is closest to a probability threshold. '''
+    ''' Uses binary search to identify the bid that is closest to a probability threshold. 
+    
+    Parameters
+    ----------
+    hand : Hand
+        The player's hand.
+    options : list
+        The possible bids.
+    total_dice : int
+        The total number of dice in the game.
+    min_probability : float
+        The minimum probability threshold.
+    palifico : bool | False
+        Whether the game is in palifico.
+    blur : float | 0
+        The probability blur - how much to randomly skew the probability - to simulate uncertainty.
+    '''
 
     # get the total dice outside of the player's hand
     total_dice_exclusive = total_dice - len(hand)
@@ -58,7 +74,24 @@ def choose_bid(hand, options, total_dice, min_probability, palifico=False, blur=
     return option
 
 def decide_call(hand, bid, total_dice, min_probability, palifico=False, blur=0):
-    ''' Decides whether to call or to bid. '''
+    ''' 
+    Decides whether to call or to bid. 
+
+    Parameters
+    ----------
+    hand : Hand
+        The player's hand.
+    bid : tuple
+        The current bid.
+    total_dice : int
+        The total number of dice in the game.
+    min_probability : float
+        The minimum probability threshold.
+    palifico : bool | False
+        Whether the game is in palifico.
+    blur : float | 0
+        The probability blur - how much to randomly skew the probability - to simulate uncertainty.
+    '''
 
     # get the total dice outside of the player's hand
     total_dice_exclusive = total_dice - len(hand)
@@ -80,11 +113,21 @@ def decide_call(hand, bid, total_dice, min_probability, palifico=False, blur=0):
 
     return True if prob < min_probability else False
 
-def create_bluff_hand(hand, bluff_value, bluffing_intensity=0.5, palifico=False, sides_per_die=6):
+def create_bluff_hand(hand, bluff_value, bluffing_intensity=0.5, sides_per_die=6):
     '''
     Creates a bluff hand by changing the values of the dice.
-    '''
 
+    Parameters
+    ----------
+    hand : Hand
+        The player's hand.
+    bluff_value : int
+        The value to bluff about.
+    bluffing_intensity : float | 0.5
+        The intensity of the bluff.
+    sides_per_die : int | 6 
+        The number of sides on each die.
+    '''
 
     # we need to create a dummy hand that incorporates a bluff
             
@@ -110,8 +153,19 @@ def create_bluff_hand(hand, bluff_value, bluffing_intensity=0.5, palifico=False,
 
 def choose_bluff_value(round_history, palifico=False, sides_per_die=6):
     '''
+    Chooses a bluff value based on the previous bids.
+
+    Parameters
+    ----------
+    round_history : list
+        The history of the round.
+    palifico : bool | False
+        Whether the game is in palifico.
+    sides_per_die : int | 6
+        The number of sides on each die.
     '''
 
+    # if there's no history, just choose randomly
     if not round_history:
         
         if palifico:
@@ -119,6 +173,7 @@ def choose_bluff_value(round_history, palifico=False, sides_per_die=6):
         else:
             return random.randint(2, sides_per_die)
 
+    # otherwise, get the previous values that have been bidded
     previous_bid_values = [x[1][1] for x in round_history]
 
     # get the most common value(s)

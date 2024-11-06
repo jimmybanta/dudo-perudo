@@ -1,8 +1,8 @@
+''' Contains the Player class and its subclasses. '''
 
 import random
-from collections import Counter
 
-from perudo.hand import Hand
+from perudo.logic.hand import Hand
 from perudo.logic.legal_bids import legal_bids, legal_starting_bids
 from perudo.local_game.utils import input_int
 from perudo.player.move import choose_bid, decide_call, create_bluff_hand, choose_bluff_value
@@ -27,7 +27,13 @@ class Player:
     
     def roll(self, values=None):
         '''Roll the dice.
-        If values is not None, then the dice are rolled with the given values.'''
+        If values is not None, then the dice are rolled with the given values.
+        
+        Parameters
+        ----------
+        values : list | None
+            The values to roll the dice with. If None, then the dice are rolled randomly.
+        '''
 
         self.hand = Hand(size=self.num_dice, sides_per_die=self.sides_per_die, values=values)
     
@@ -55,7 +61,16 @@ class HumanPlayer(Player):
         super().__init__(name=name, num_dice=num_dice, sides_per_die=sides_per_die, ai=False)
     
     def starting_bid(self, total_dice, palifico=False):
-        '''Inputs the player for the starting bid.'''
+        '''
+        Inputs the player for the starting bid.
+
+        Parameters
+        ----------
+        total_dice : int
+            The total number of dice in the game.
+        palifico : bool | False
+            Whether the game is in palifico.
+        '''
 
         allowed_bids = legal_starting_bids(total_dice=total_dice, 
                                            sides_per_die=self.sides_per_die,
@@ -72,7 +87,18 @@ class HumanPlayer(Player):
         return (quantity, value)
 
     def starting_direction(self, players, palifico=False):
-        '''Inputs the player for the direction the player wants to go in.'''
+        '''
+        Inputs the player for the direction the player wants to go in.
+
+        Note: I only used this in the local game. In the online game, the play always moves clockwise.
+
+        Parameters
+        ----------
+        players : list
+            The list of players in the game.
+        palifico : bool | False
+            Whether the game is in palifico.
+        '''
 
         direction = input('Up or down? ')
         while direction.lower() not in ['up', 'down']:
@@ -81,7 +107,20 @@ class HumanPlayer(Player):
         return direction.lower()
     
     def move(self, bid, history, total_dice, palifico=False):
-        '''Allows the player to input a move - either a call or a higher bid.'''
+        '''
+        Allows the player to input a move - either a call or a higher bid.
+
+        Parameters
+        ----------
+        bid : tuple
+            The current bid in the form (quantity, value).
+        history : list
+            The history of the round.
+        total_dice : int
+            The total number of dice in the game.
+        palifico : bool | False
+            Whether the game is in palifico.
+        '''
 
         call = input('Do you wish to call? Type y to call, anything else to bid. ')
         if call.lower() == 'y':
@@ -122,7 +161,18 @@ class AIRandomPlayer(AIPlayer):
     '''An AI player that plays completely randomly.'''
 
     def starting_bid(self, hand, total_dice, palifico=False):
-        '''Randomly selects a bid from all possible allowed starting bids.'''
+        '''
+        Randomly selects a bid from all possible allowed starting bids.
+
+        Parameters
+        ----------
+        hand : Hand
+            The player's hand.
+        total_dice : int
+            The total number of dice in the game.
+        palifico : bool | False
+            Whether the game is in palifico.
+        '''
 
         allowed_bids = legal_starting_bids(total_dice=total_dice, 
                                            sides_per_die=self.sides_per_die,
@@ -132,13 +182,26 @@ class AIRandomPlayer(AIPlayer):
 
     
     def move(self, hand, round_history, game_history, total_dice, palifico=False):
-        '''Randomly chooses to call (prob .25) or to bid (prob .75). 
-        If bidding, randomly selects a bid from all allowed bids.'''
+        '''
+        Randomly chooses to call (with a given probability) or to bid. 
+        If bidding, randomly selects a bid from all allowed bids.
 
-        n = random.random()
+        Parameters
+        ----------
+        hand : Hand
+            The player's hand.
+        round_history : list
+            The history of the current round.
+        game_history : list
+            The history of the game.
+        total_dice : int
+            The total number of dice in the game.
+        palifico : bool | False
+            Whether the game is in palifico.
+        '''
 
         # 25% chance of calling
-        if n < 0.25:
+        if random.random() < 0.25:
             return 'call', 5000
 
         # 75% chance of bidding
@@ -153,6 +216,7 @@ class AIRandomPlayer(AIPlayer):
 
         # otherwise, randomly select a bid
         return random.choice(allowed_bids), 5000
+
 
 class AISmartPlayer(AIPlayer):
     ''' An AI Player designed to play intelligently.'''
@@ -194,7 +258,18 @@ class AISmartPlayer(AIPlayer):
 
 
     def starting_bid(self, hand, total_dice, palifico=False):
-        '''Randomly selects a bid from all possible allowed starting bids.'''
+        '''
+        Selects a bid from all possible allowed starting bids.
+
+        Parameters
+        ----------
+        hand : Hand
+            The player's hand.
+        total_dice : int
+            The total number of dice in the game.
+        palifico : bool | False
+            Whether the game is in palifico.
+        '''
 
         allowed_bids = legal_starting_bids(total_dice=total_dice, 
                                            sides_per_die=self.sides_per_die,
@@ -203,6 +278,8 @@ class AISmartPlayer(AIPlayer):
         starting_prob = self.starting_prob if not palifico else self.starting_palifico_prob
 
         # calculate the probability blur
+        ## aka how much uncertainty to add to the player's probability calculations
+        ## it will be a random value, uniformly picked from the range [-probability_blur, probability_blur]
         blur = random.uniform(-self.probability_blur, self.probability_blur)
 
         # determine if they'll be bluffing
@@ -218,6 +295,7 @@ class AISmartPlayer(AIPlayer):
             hand = create_bluff_hand(hand, bluff_value, bluffing_intensity=self.bluffing_intensity, sides_per_die=self.sides_per_die)
             
 
+        # choose the bid
         bid = choose_bid(hand, allowed_bids, total_dice, starting_prob, palifico=palifico, 
                          blur=blur)
 
@@ -225,7 +303,20 @@ class AISmartPlayer(AIPlayer):
         
     def move(self, hand, round_history, game_history, total_dice, palifico=False):
         ''' 
+        Chooses a move based on the current state of the game.
 
+        Parameters
+        ----------
+        hand : Hand
+            The player's hand.
+        round_history : list
+            The history of the current round.
+        game_history : list
+            The history of the game. (Note: currently unused)
+        total_dice : int
+            The total number of dice in the game.
+        palifico : bool | False
+            Whether the game is in palifico.
         '''
 
         last_bid = round_history[-1][1]
@@ -233,9 +324,11 @@ class AISmartPlayer(AIPlayer):
         # calculate the probability blur
         blur = random.uniform(-self.probability_blur, self.probability_blur)
 
+        # decide if they'll call
         if decide_call(hand, last_bid, total_dice, self.calling_prob, palifico=palifico, blur=blur):
             return 'call', random.randint(*self.starting_pause)
         
+        # determine the allowed bids
         allowed_bids = legal_bids(round_history[-1][1], total_dice, 
                                   sides_per_die=self.sides_per_die,
                                   palifico=palifico,
@@ -249,35 +342,8 @@ class AISmartPlayer(AIPlayer):
 
             hand = create_bluff_hand(hand, bluff_value, bluffing_intensity=self.bluffing_intensity, sides_per_die=self.sides_per_die)
         
+        # choose the bid
         bid = choose_bid(hand, allowed_bids, total_dice, self.betting_prob, palifico=palifico, 
                          blur=blur)
 
         return bid, random.randint(*self.starting_pause)
-
-
-
-
-
-    
-
-
-if __name__ == '__main__':
-
-    num_dice = 5
-    sides_per_die = 6
-
-    player = Player(name='test', num_dice=num_dice, ai=False, sides_per_die=sides_per_die)
-
-    print(player)
-    print(player.num_dice)
-    print(player.hand)
-    player.roll()
-    print(player.hand)
-    print(player.hand.count(1))
-    player.lose_die()
-    print(player.num_dice)
-    player.roll()
-    print(player.hand)
-    player.lose_die()
-    player.roll()
-    print(player.hand)

@@ -6,7 +6,7 @@ import math
 def legal_bids(current, total_dice, 
                sides_per_die=6, palifico=False, ex_palifico=False):
     '''
-    Returns a list of all legal bids.
+    Returns a list of all legal bids, given a situation.
 
     Parameters
     ----------
@@ -165,42 +165,3 @@ def higher_quantity_bids(quantity, total_dice,
         # go through all possible values in the given range
         for j in range(value_range[0], value_range[1] + 1):
             yield (i, j)
-
-
-    
-
-if __name__ == '__main__':
-
-    current = (0, 6)
-    current_quantity, current_value = current[0], current[1]
-    total_dice = 10
-    sides_per_die = 6
-    palifico = False
-    ex_palifico = False
-
-    value_range = (1, 6)
-
-    """ bids = legal_bids(current, total_dice, 
-                      sides_per_die=sides_per_die, 
-                      palifico=palifico, ex_palifico=ex_palifico) """
-    
-    bids = legal_starting_bids(2, sides_per_die=6, palifico=False)
-    
-    def print_list_with_newlines(lst, items_per_line=7):
-        for i, item in enumerate(lst, start=1):
-            print(item, end=', ')
-            if i % items_per_line == 0:
-                print()  # Move to a new line after every 7 items
-        
-        print()  # Move to a new line after the last item
-
-    print_list_with_newlines(bids)
-    
-
-    
-
-
-
-
-
-

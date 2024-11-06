@@ -1,3 +1,5 @@
+''' This module contains the Die class, which is used to represent a die in the game of Perudo. '''
+
 import random
 
 class Die:

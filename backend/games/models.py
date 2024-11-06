@@ -1,12 +1,17 @@
+''' This file contains the models for the games app. '''
+
 from django.db import models
 
 # Create your models here.
 
 class Game(models.Model):
 
+    # the user who created the game
     player = models.CharField(max_length=200, null=True)
 
+    # number of dice each player gets
     dice_per_player = models.IntegerField(null=True)
+    # number of sides on each die
     sides_per_die = models.IntegerField(null=True)
 
     # table is a list of all the players
@@ -24,8 +29,10 @@ class Game(models.Model):
     
 class Character(models.Model):
 
+    # the name of the character
     name = models.CharField(max_length=200)
 
+    # the description of the character
     description = models.CharField(max_length=1000, null=True)
 
     created = models.DateTimeField(auto_now_add=True)

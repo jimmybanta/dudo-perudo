@@ -1,36 +1,31 @@
-from django.http import HttpResponse, FileResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt # Allow request without csrf_token set
+import json
+import logging
+import random
+
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt  # Allow request without csrf_token set
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 
 from django_eventstream import send_event
 
-from rest_framework import viewsets
-
 import config
-import random
-import time
-import json
-import logging
-
 from games.models import Game, Character
 from games.serializers import CharacterSerializer
-from perudo.round import run_round
+from games.prompting import prompt
 import perudo.logic as logic
 from perudo.logic.calculate_probs import calculate_prob
-
 from perudo.characters.characters import CHARACTERS
-
-from prompting import prompt
 
 logger = logging.getLogger(__name__)
 
 
-## Viewsets
-
+# Viewsets
 class CharacterViewSet(viewsets.ModelViewSet):
     queryset = Character.objects.all()    
     serializer_class = CharacterSerializer
 
+# Views
 @csrf_exempt
 @api_view(['GET'])
 def get_current_version(request):
@@ -40,10 +35,21 @@ def get_current_version(request):
 
     return JsonResponse({'version': config.game_version})
 
-
 @api_view(['POST'])
 def initialize_game(request):
-    '''Initializes a new game.'''
+    '''Initializes a new game.
+    
+    API Parameters
+    --------------
+    player : str
+        The name of the human user.
+    table : list
+        A list of players at the table.
+    dice_per_player : int
+        The number of dice each player starts with.
+    sides_per_die : int
+        The number of sides on each die.
+    '''
 
     ### Set up Game
 
@@ -57,18 +63,22 @@ def initialize_game(request):
         table.insert(0, player)
 
     # create a new game
-    game = Game.objects.create()
+    try:
+        game = Game.objects.create(
+            player=player,
+            table=table,
+            dice_per_player=dice_per_player,
+            sides_per_die=sides_per_die
+        )
+    except:
+        logger.exception('Error creating game')
+        return HttpResponse('Error creating game. Please try again.', status=255)
 
-    game.player = player
-    game.table = table
-    game.dice_per_player = dice_per_player
-    game.sides_per_die = sides_per_die
-
-    game.save()
 
     ### Determine who goes first
     current_player = random.choice(table)
 
+    # return the game id and the starting player to the frontend
     data_to_return = {
         'game_id': game.id,
         'starting_player': current_player
@@ -76,10 +86,23 @@ def initialize_game(request):
 
     return JsonResponse(data_to_return)
 
-
 @api_view(['POST'])
 def legal_bids(request):
-    '''Given the state of the table, returns all the legal bids.'''
+    '''Given the state of the table, returns all the legal bids.
+    
+    API Parameters
+    --------------
+    table_dict : dict
+        A dictionary of players and their attributes.
+    sides_per_die : int
+        The number of sides on each die.
+    palifico : bool
+        Whether it is a palifico round.
+    round_history : list
+        A list of previous moves.
+    current_player : str
+        The current player.
+    '''
 
     table_dict = request.data['table_dict']
     sides_per_die = request.data['sides_per_die']
@@ -87,35 +110,48 @@ def legal_bids(request):
     round_history = request.data['round_history']
     current_player = request.data['current_player']
 
-    # get total num of dice
     try:
+        # get total num of dice
         total_dice = sum([int(table_dict[player]['dice']) for player in table_dict])
+        
+        # if there's no round history, then we're at the beginning of the round
+        # we want to get the starting bids for the player
+        if not round_history:
+
+            bids = logic.legal_bids.legal_starting_bids(total_dice, 
+                                        sides_per_die=sides_per_die, palifico=palifico)
+        
+        # if there is round history, then we're in the middle of the round
+        # we want to get the legal bids for the player
+        else:
+            _, previous_bid = round_history[-1]
+
+            bids = logic.legal_bids.legal_bids(previous_bid, total_dice, 
+                                        sides_per_die=sides_per_die, palifico=palifico,
+                                        ex_palifico=table_dict[current_player]['ex-palifico'])
     except:
-        print('problem')
-        print(table_dict)
-    
-    # if there's no round history, then we're at the beginning of the round
-    # we want to get the starting bids for the player
-    if not round_history:
+        logger.exception('Error getting legal bids')
+        return HttpResponse('Server error. Please try again.', status=255)
 
-        bids = logic.legal_bids.legal_starting_bids(total_dice, 
-                                    sides_per_die=sides_per_die, palifico=palifico)
-    
-    # if there is round history, then we're in the middle of the round
-    # we want to get the legal bids for the player
-    else:
-        _, previous_bid = round_history[-1]
-
-        bids = logic.legal_bids.legal_bids(previous_bid, total_dice, 
-                                    sides_per_die=sides_per_die, palifico=palifico,
-                                    ex_palifico=table_dict[current_player]['ex-palifico'])
-
-    
     return JsonResponse({'legal_bids': bids})
 
 @api_view(['POST'])
 def get_move(request):
-    ''' Given an AI player, gets their move given the current state of the round/game. '''
+    ''' Given an AI player, gets their move given the current state of the round/game. 
+    
+    API Parameters
+    --------------
+    current_player : str
+        The current player.
+    round_history : list
+        A list of previous moves.
+    table_dict : dict
+        A dictionary of players and their attributes.
+    palifico : bool
+        Whether it is a palifico round.
+    game_history : list
+        A list of previous rounds.
+    '''
 
     current_player = request.data['current_player']
     round_history = request.data['round_history']
@@ -129,27 +165,43 @@ def get_move(request):
     # note - could be used later, if we want to incorporate game history into AI moves
     game_history = request.data['game_history']
 
-    total_dice = sum([table_dict[player]['dice'] for player in table_dict])
+    try:
+        total_dice = sum([table_dict[player]['dice'] for player in table_dict])
 
-    current_player_obj = CHARACTERS[current_player.split('-')[0].lower()]()
+        current_player_obj = CHARACTERS[current_player.split('-')[0].lower()]()
 
-    # get the move from the AI player
-    ## case 1 - round is underway
-    if round_history:
-        move, pause = current_player_obj.move(hand, round_history, game_history, total_dice, palifico=palifico)
-    ## case 2 - round is starting
-    else:
-        move, pause = current_player_obj.starting_bid(hand, total_dice, palifico=palifico)
-
-    """ ## to do - add pausing/thinking time logic
-    # time in milliseconds
-    pause = 5000 """
+        # get the move from the AI player
+        ## case 1 - round is underway
+        if round_history:
+            move, pause = current_player_obj.move(hand, round_history, game_history, total_dice, palifico=palifico)
+        ## case 2 - round is starting
+        else:
+            move, pause = current_player_obj.starting_bid(hand, total_dice, palifico=palifico)
+    except: 
+        logger.exception(f'Error getting move for {current_player}')
+        return HttpResponse('Server error. Please try again.', status=255)
     
     return JsonResponse({'move': move, 'pause': pause})
     
 @api_view(['POST'])
 def end_round(request):
-    '''Run at the end of a round.'''
+    '''Run at the end of a round.
+    
+    API Parameters
+    --------------
+    round_history : list
+        A list of previous moves.
+    table_dict : dict
+        A dictionary of players and their attributes.
+    palifico : bool
+        Whether it is a palifico round.
+    loser : str
+        The player who lost the round.
+    total : int
+        The total number of dice on the table.
+    game_id : int
+        The game id.
+    '''
 
     round_history = request.data['round_history']
     table_dict = request.data['table_dict']
@@ -169,19 +221,57 @@ def end_round(request):
         'total': total,
     }
 
-    # then, update the game state
-    game = Game.objects.get(id=game_id)
-    if game.history:
-        game.history.append(round_dict)
-    else:
-        game.history = [round_dict]
-    game.save()
+    try:
+        # then, update the game state
+        game = Game.objects.get(id=game_id)
+        if game.history:
+            game.history.append(round_dict)
+        else:
+            game.history = [round_dict]
+        game.save()
+    except:
+        logger.exception('Error saving game history')
+        return HttpResponse('Server error. Please try again.', status=255)
 
     return JsonResponse({'success': True})
 
 @api_view(['POST'])
 def get_chat_messages(request):
-    '''Generates chat messages for a game.'''
+    '''Generates chat messages for a game.
+
+    API Parameters
+    --------------
+    game_id : int
+        The game id.
+    message_history : list
+        A list of previous messages.
+    player : str
+        The current player.
+    table : list
+        A list of players at the table.
+    round_history : list
+        A list of previous moves.
+    palifico : bool | None
+        Whether it is a palifico round.
+    table_dict : dict | None
+        A dictionary of players and their attributes.
+    total_dice : int | None
+        The total number of dice on the table.
+    sides_per_die : int | None
+        The number of sides on each die.
+    starting_player : str | None
+        The starting player.
+    round_total : int | None
+        The total number of dice in the round.
+    round_loser : str | None
+        The player who lost the round.
+    user_message : str | None
+        The message from the user.
+    player_out : str | None
+        The player who is out of the game.
+    context : str
+        The context of the chat message.
+    '''
 
     # these inputs will always be present
     game_id = request.data['game_id']
@@ -236,7 +326,7 @@ def get_chat_messages(request):
     context = request.data['context']
 
     prob = None
-
+    # if we're in the middle of a round, then we want to calculate the probability of the bid
     if context == 'move':
 
         move = round_history[-1][1]
@@ -245,7 +335,7 @@ def get_chat_messages(request):
             prob = calculate_prob(move, total_dice, palifico=palifico, sides_per_die=sides_per_die)
 
             # if prob is within some range, we don't want any responses
-            # no need for responses to these reasonable bids - just clogs up the chat        
+            # no need for responses to these reasonable bids - just clogs up the chat
             if prob > 0.25 and prob < 0.75:
                 return JsonResponse({'success': True})                
     
@@ -254,6 +344,7 @@ def get_chat_messages(request):
     sent_messages = 0
     total_delay = 0
     
+    # get the response stream
     for chunk in prompt(
                     context=context,
                     message_history=message_history,
@@ -275,6 +366,7 @@ def get_chat_messages(request):
         # remove any newlines
         chunk = chunk.replace('\n', '')
         
+        # add the chunk to the current message
         current_message += chunk
 
         # if we've reached the end of a message, send it
@@ -286,7 +378,6 @@ def get_chat_messages(request):
             message_dict = json.loads(current_message[start_point:break_point])
 
             # don't let it return messages by the player
-            ## this is a mistake
             try:
                 if message_dict['writer'] == player:
                     break
@@ -311,18 +402,16 @@ def get_chat_messages(request):
                 logger.info(f'No text in message: {message_dict}')
                 break
                 
+            # send it to the frontend
             send_event(f'game-{game_id}', 'message', message_dict)
         
+            # reset the current message
             current_message = current_message[break_point:]
 
             # add the delay
             total_delay += message_delay
 
             sent_messages += 1
-
-    
-        
-
 
 
     return JsonResponse({'success': True})

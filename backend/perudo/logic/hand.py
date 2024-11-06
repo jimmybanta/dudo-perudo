@@ -1,5 +1,6 @@
+''' This module contains the Hand class, which represents a "hand" of dice. '''
 
-from perudo.dice import Die
+from perudo.logic.dice import Die
 
 
 class Hand(list):

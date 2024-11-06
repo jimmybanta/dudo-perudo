@@ -3,7 +3,8 @@
 
 
 def score(bid, all_dice, palifico=False):
-    '''Score a bid in Perudo.
+    '''
+    Score a bid in Perudo.
     Returns True if the bid was true, False otherwise.
     
     Parameters

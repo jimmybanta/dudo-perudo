@@ -5,6 +5,7 @@ temp.py
 temp.ipynb
 */venv
 .env
+/logs/
 run.py
 
 tests

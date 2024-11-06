@@ -8,6 +8,8 @@ temp.ipynb
 /logs/
 run.py
 
+deploy-prod.sh
+
 tests
 __pycache__
 

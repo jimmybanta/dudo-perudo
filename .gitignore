@@ -15,7 +15,12 @@ __pycache__
 
 _graveyard/
 
-node_modules
+node_modules/
+
+build-prod/
+build-stag/
+build/
+
 
 
 

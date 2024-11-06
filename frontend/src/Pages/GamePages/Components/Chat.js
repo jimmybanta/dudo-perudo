@@ -145,6 +145,8 @@ const Chat = ({ gameID, player, table, tableDict, currentPlayer, roundHistory, p
 
                 const loadPlayerOutComments = async () => {
 
+                    console.log('loading player out comments');
+
                     const [commentsSuccess, commentsResp] = await apiCall({
                         method: 'post',
                         url: `/games/get_chat_messages/`,

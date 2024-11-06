@@ -21,4 +21,4 @@ class DiceBot(AISmartPlayer):
         self.bluffing_intensity = 0.6
 
         # plays very quickly
-        self.starting_pause = [100, 200]
+        self.starting_pause = [400, 500]

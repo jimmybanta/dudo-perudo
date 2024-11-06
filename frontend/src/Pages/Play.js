@@ -18,10 +18,9 @@ const cupOptions = [1, 2, 3, 4, 5, 6]; // the ids of cup images that are current
 
 const Play = ({ onSetCurrentPage }) => {
 
+    /* 
     // temp setup
-
     const [dicePerPlayer, setDicePerPlayer] = useState(5);
-
     const [player, setPlayer] = useState('crespin');
     const [gameID, setGameID] = useState(59);
     const [table, setTable] = useState(['crespin', 'riyaaz', 'jimmy',
@@ -45,7 +44,6 @@ const Play = ({ onSetCurrentPage }) => {
         'adam-2': 5,
         'theo': 6,
     });
-
     const [showDice, setShowDice] = useState({
         'crespin': false,
         'riyaaz': false,
@@ -54,13 +52,13 @@ const Play = ({ onSetCurrentPage }) => {
         'adam-2': false,
         'theo': false,
     });
-
-    const [setupComplete, setSetupComplete] = useState(true);
+    const [setupComplete, setSetupComplete] = useState(true); 
+    */
 
 
     //// Setup variables
 
-    /* const [player, setPlayer] = useState(null); // the player's name
+    const [player, setPlayer] = useState(null); // the player's name
     const [table, setTable] = useState([]); // the table of players
     const [dicePerPlayer, setDicePerPlayer] = useState(null); // the number of dice per player
     const [sidesPerDie, setSidesPerDie] = useState(null); // the number of sides per die
@@ -79,7 +77,7 @@ const Play = ({ onSetCurrentPage }) => {
     const [tableDict, setTableDict] = useState({});
 
     // currentPlayer is the player whose turn it is
-    const [currentPlayer, setCurrentPlayer] = useState(null); */
+    const [currentPlayer, setCurrentPlayer] = useState(null);
     
 
 

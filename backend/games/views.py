@@ -249,7 +249,14 @@ def get_chat_messages(request):
             if prob > 0.25 and prob < 0.75:
                 return JsonResponse({'success': True})                
 
-
+    if context == 'player_out':
+        
+        if 'ross' in table:
+            send_event(f'game-{game_id}', 'message', {
+                'writer': 'ross',
+                'text': 'alright now we can start playing properly',
+                'delay': 0
+            })
     
     # streaming responses
     current_message = ''

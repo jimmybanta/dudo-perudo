@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { BASE_URL } from '../interceptors';
+import { BASE_URL } from '../BaseURL';
 
 import Setup from './GamePages/Setup';
 import Game from './GamePages/Game';

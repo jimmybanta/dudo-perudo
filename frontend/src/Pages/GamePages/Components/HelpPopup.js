@@ -1,15 +1,17 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 
 
 
 const HelpPopup = ({ fadeClass, page }) => {
+    // the help popup
 
 
+    // renders the paragraphs for the help popup
+    // based on the current page
     const renderParagraphs = () => {
 
         let paragraphs = [];
-
 
         if (page === 'setup') {
 

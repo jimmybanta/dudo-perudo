@@ -1,34 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Dropdown, 
-    DropdownToggle, 
-    DropdownMenu, 
-    DropdownItem, 
-    FormGroup, 
-    Label, 
-    Input,
-    UncontrolledDropdown,
-    Col,
-    Button } from "reactstrap";
-
 
 const ValueDropDown = ({ availableValues, palifico, singular, onValueChange }) => {
+    // A dropdown for selecting a value
 
     const allValues = [
-        singular ? (palifico ? 'one': 'jessie') : (palifico ? 'ones': 'jessies'),
+        singular ? (palifico ? 'one' : 'jessie') : (palifico ? 'ones' : 'jessies'),
         singular ? 'two' : 'twos',
         singular ? 'three' : 'threes',
         singular ? 'four' : 'fours',
         singular ? 'five' : 'fives',
         singular ? 'six' : 'sixes',
-    ]
+    ]; // all possible values
 
-    const [selectedValue, setSelectedValue] = useState(null);
-    
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [selectedValue, setSelectedValue] = useState(null); // the selected value
+    const [dropdownOpen, setDropdownOpen] = useState(false); // whether the dropdown is open
 
     // if singular changes, update the selected value
     useEffect(() => {
-
         const singularToPlural = {
             'one': 'ones',
             'jessie': 'jessies',
@@ -49,7 +37,6 @@ const ValueDropDown = ({ availableValues, palifico, singular, onValueChange }) =
             'sixes': 'six',
         };
 
-        
         if (selectedValue in singularToPlural) {
             setSelectedValue(singularToPlural[selectedValue]);
         }
@@ -57,67 +44,50 @@ const ValueDropDown = ({ availableValues, palifico, singular, onValueChange }) =
         if (selectedValue in pluralToSingular) {
             setSelectedValue(pluralToSingular[selectedValue]);
         }
-
     }, [singular]);
 
-
-    
-      
+    // toggle the dropdown
     const toggle = (e) => {
         setDropdownOpen(!dropdownOpen);
     };
 
+    // handle a value change
     const handleValueChange = (value) => {
-
         onValueChange(value);
-
         setSelectedValue(value);
-
         toggle();
-
     };
 
-
-      
-    
-    
-      return (
-        <div 
-        className='value-dropdown'
-        >
-            <button 
-            className="value-dropdown-button text player-bid"
-            onClick={() => toggle()}
+    return (
+        <div className='value-dropdown'>
+            <button
+                className="value-dropdown-button text player-bid"
+                onClick={() => toggle()}
             >
                 {selectedValue ? selectedValue : 'value'}
             </button>
 
-            <div className="value-dropdown-content text player-bid"
-            style={{
-                display: dropdownOpen ? 'block' : 'none',
-            }}>
-
+            <div
+                className="value-dropdown-content text player-bid"
+                style={{
+                    display: dropdownOpen ? 'block' : 'none',
+                }}
+            >
                 {allValues.map((value) => (
-                    <span 
-                    className="value-dropdown-item"
-                    onClick={() => handleValueChange(value)}
-                    style={{
-                        opacity: availableValues.includes(value) ? 1 : 0.5,
-                        pointerEvents: availableValues.includes(value) ? 'auto' : 'none',
-                    }}
+                    <span
+                        className="value-dropdown-item"
+                        onClick={() => handleValueChange(value)}
+                        style={{
+                            opacity: availableValues.includes(value) ? 1 : 0.5,
+                            pointerEvents: availableValues.includes(value) ? 'auto' : 'none',
+                        }}
                     >
                         {value}
                     </span>
                 ))}
-
             </div>
-
-
         </div>
+    );
+}
 
-
-      );
-    }
-    
 export default ValueDropDown;
-    

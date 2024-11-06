@@ -1,13 +1,15 @@
 
+//// utility functions
 
 
-
+// rolls a die with the specified number of sides
 const rollDie = (numSides) => {
 
     return Math.floor(Math.random() * numSides) + 1;
 
 };
 
+// rolls a number of dice with the specified number of sides
 export const rollDice = (numDice, numSides) => {
 
     const rolls = [];
@@ -23,7 +25,7 @@ export const rollDice = (numDice, numSides) => {
 
 };
 
-
+// waits for a specified number of milliseconds
 export const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };

@@ -1,64 +1,53 @@
-import { React, useState } from 'react';
-
-import { Button } from 'reactstrap';
-
-
+import React from 'react';
 
 const Home = ({ onSetCurrentPage }) => {
-
-    return (
-      <div
+  // the home page
+  
+  return (
+    <div
       className='container flex-column'
       style={{
         position: 'relative',
         gap: '30px',
         width: '100%',
         height: '100%',
-      }}>
+      }}
+    >
+      <div
+        className='text main-title all-caps'
+        style={{}}
+      >
+        Dudo Perudo
+      </div>
 
-        <div 
-          className='text main-title all-caps'
-          style={{
-          }}
-          >
-          Dudo Perudo
-        </div>
-
-        <div className='container flex-column'
+      <div
+        className='container flex-column'
         style={{
           position: 'relative',
-        }} >
-
-          <img 
+        }}
+      >
+        <img
           className='home-table'
-          src='assets/table.png' 
-          alt='table' 
-          />
+          src='assets/table.png'
+          alt='table'
+        />
 
-          <div 
+        <div
           className='text button home-button home-play-button'
           onClick={() => onSetCurrentPage('Play')}
-          >
-          <span className=''>let's play!</span>
-          </div>
+        >
+          <span>let's play!</span>
+        </div>
 
-          <div 
+        <div
           className='text button home-button home-about-button'
           onClick={() => onSetCurrentPage('About')}
-          >
-          <span className=''>about</span>
-          </div>
-
-
-
+        >
+          <span>about</span>
         </div>
-        
-        
-        
+      </div>
     </div>
-    )
-    }
-
-
+  );
+};
 
 export default Home;

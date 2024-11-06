@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import { apiCall } from '../api';
 
 const About = ({ onSetCurrentPage }) => {
@@ -36,7 +35,6 @@ const About = ({ onSetCurrentPage }) => {
                 width: '100%',
                 paddingLeft: '5%',
                 paddingRight: '5%',
-                //border: '1px solid white',
             }}
         >
             <div
@@ -44,7 +42,6 @@ const About = ({ onSetCurrentPage }) => {
                 style={{
                     width: '100%',
                     marginBottom: '10%',
-                    //border: '1px solid white',
                 }}
             >
                 <div className='text about-header all-caps'>About</div>
@@ -67,16 +64,16 @@ const About = ({ onSetCurrentPage }) => {
                     and play the real game.
                 </div>
 
-                <div
-                style={{
-                    height: '50px',
-                }} 
-                />
+                <div style={{ height: '50px' }} />
 
                 <div className='text about-paragraphs'>
-                    Dudo Perudo was designed by Jimmy Banta. You can see more of his work {' '}
-                    <a className='about-link'
-                    href='https://jimmybanta.com' target='_blank' rel='noreferrer'>
+                    Dudo Perudo was designed by Jimmy Banta. You can see more of his work{' '}
+                    <a
+                        className='about-link'
+                        href='https://jimmybanta.com'
+                        target='_blank'
+                        rel='noreferrer'
+                    >
                         here
                     </a>
                     .
@@ -84,8 +81,12 @@ const About = ({ onSetCurrentPage }) => {
 
                 <div className='text about-paragraphs'>
                     Or you can check out the code for Dudo Perudo{' '}
-                    <a className='about-link'
-                    href='https://github.com/jimmybanta/crash-the-game/' target='_blank' rel='noreferrer'>
+                    <a
+                        className='about-link'
+                        href='https://github.com/jimmybanta/crash-the-game/'
+                        target='_blank'
+                        rel='noreferrer'
+                    >
                         here
                     </a>
                     .

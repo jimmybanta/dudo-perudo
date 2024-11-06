@@ -4,6 +4,7 @@ import { BASE_URL } from '../interceptors';
 
 import Setup from './GamePages/Setup';
 import Game from './GamePages/Game';
+import HelpPopup from './GamePages/Components/HelpPopup';
 
 import { apiCall } from '../api';
 
@@ -78,6 +79,10 @@ const Play = ({ onSetCurrentPage }) => {
 
     // currentPlayer is the player whose turn it is
     const [currentPlayer, setCurrentPlayer] = useState(null);
+
+    //// help popup
+    const [helpPopup, setHelpPopup] = useState(false); // if the help popup is open
+    const [helpPopupFadeClass, setHelpPopupFadeClass] = useState('help-popup-in'); // class for fading the help popup
     
 
 
@@ -156,6 +161,31 @@ const Play = ({ onSetCurrentPage }) => {
 
     };
 
+    // handle clicking on the help button
+    const handleHelpClick = (e) => {
+        // params:
+        // e: the event
+
+        // prevent the event from bubbling up
+        e.stopPropagation();
+
+        // if it's oopen, then fade it out
+        if (helpPopup) {
+            setHelpPopupFadeClass('help-popup-out');
+            // wait for the popup to fade out
+            setTimeout(() => {
+                setHelpPopup(false);
+            }, 500);
+        }
+        // if it's closed, then fade it in
+        else {
+            setHelpPopupFadeClass('help-popup-in');
+            setHelpPopup(true);
+        }
+
+
+    };
+
     
 
     return (
@@ -209,6 +239,23 @@ const Play = ({ onSetCurrentPage }) => {
                 />
             
             )}
+
+            {/* render the help button */}
+            <div 
+                className='help-button text help'
+                onClick={(e) => handleHelpClick(e)}
+            >
+                ?
+            </div>
+
+            {/* render the help popup */}
+            {helpPopup && 
+                <HelpPopup
+                fadeClass={helpPopupFadeClass}
+                page={ setupComplete ? 'game' : 'setup' } />
+            }
+
+            
             
 
 

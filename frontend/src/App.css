@@ -22,6 +22,11 @@
 
   --chat-header-background-color: #2f2f2f83;
 
+  --help-button-background-color: rgb(195, 195, 195);
+  --help-button-hover-color: rgb(130, 130, 130);
+  --help-popup-background-color: rgb(216, 216, 216);
+  --help-popup-text-color: rgb(49, 49, 49);
+
   /* cup colors */
   --cup-color-1: rgb(174, 109, 82);
   --cup-color-2: rgb(225, 44, 56);
@@ -301,6 +306,14 @@ html, body {
   position: fixed;
 }
 
+
+
+
+
+
+
+
+
 /* chat styling */
 
 .chat-box {
@@ -369,6 +382,12 @@ html, body {
 
 
 
+
+
+
+
+
+
 /* text */
 
 .text {
@@ -398,7 +417,6 @@ html, body {
   background: linear-gradient(45deg, #5c7cfa, #339af0 );
   /* #20c997, #51cf66, #94d82d, #fcc419, #ff922b); */
 }
-
 
 .gradient-text {
   -webkit-background-clip: text;
@@ -448,6 +466,19 @@ html, body {
   user-select: none;
   /* text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); */
 }
+
+.help {
+  font-size: calc(1rem + 1vw); /* Relative font size */
+}
+
+.help-popup-text {
+  font-size: calc(0.75rem + 0.5vw); /* Relative font size */
+  text-align: center;
+  color: var(--help-popup-text-color);
+}
+
+
+
 
 
 /* cup color text */
@@ -857,4 +888,93 @@ html, body {
 .value-dropdown:hover .value-dropdown-button {
   /* background-color: #38383880; */
   transform: translateY(-10%);
+}
+
+
+/* help button/popup */
+
+.help-button {
+  display: inline-block; /* Ensure the element respects width and height */
+  border-radius: 50%; /* Make the border circular */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+	position: fixed;
+	width: 75px;
+	height: 75px;
+	bottom: 40px;
+	right: 40px;
+
+  background-color: var(--help-button-background-color);
+	text-align: center;
+	box-shadow: 2px 2px 5px rgba(15, 60, 39, 0.5);
+  cursor: pointer;
+  user-select: none;
+
+  transition: background-color 0.5s ease;
+
+  color: var(--background-color);
+}
+
+
+.help-button:hover {
+  background-color: var(--help-button-hover-color);
+}
+
+@media (max-width: 768px) {
+  .help-button {
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+.help-popup {
+  position: fixed;
+  bottom: 140px; /* Adjust to position above the help button */
+  right: 40px;
+  width: 300px; /* Adjust width as needed */
+  padding: 20px;
+  background-color: var(--help-popup-background-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  opacity: 0;
+  z-index: 1000;
+}
+
+.help-popup-in {
+  animation: fadeIn 0.5s linear forwards;
+}
+
+.help-popup-out {
+  animation: fadeOut 0.5s linear forwards;
+}
+
+@media (max-width: 768px) {
+  .help-popup {
+    right: 20px;
+    width: 300px;
+    bottom: 75px;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

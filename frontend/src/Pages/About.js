@@ -83,7 +83,7 @@ const About = ({ onSetCurrentPage }) => {
                     Or you can check out the code for Dudo Perudo{' '}
                     <a
                         className='about-link'
-                        href='https://github.com/jimmybanta/crash-the-game/'
+                        href='https://github.com/jimmybanta/dudo-perudo/'
                         target='_blank'
                         rel='noreferrer'
                     >

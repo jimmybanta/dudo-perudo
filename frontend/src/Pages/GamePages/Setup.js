@@ -8,7 +8,7 @@ axios.defaults.baseURL = BASE_URL;
 
 
 // default values
-const defaultDicePerPlayer = 2;
+const defaultDicePerPlayer = 5;
 const defaultSidesPerDie = 6;
 
 

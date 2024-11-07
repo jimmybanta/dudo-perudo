@@ -3,6 +3,7 @@
 import json
 import os
 import dotenv
+import boto3
 
 
 # load environment variables and aws region
@@ -11,24 +12,34 @@ dotenv.load_dotenv()
 
 # set environment
 ENV = os.getenv('ENV')
+REGION = os.getenv('AWS_REGION')
+
+
+if not ENV:
+    raise ValueError('Environment not set.')
+
+if ENV != 'DEV':
+    # if this is staging or production, set the client
+    ## parameter store
+    SSM = boto3.client('ssm', region_name=REGION)
 
 
 # helper functions
-""" def get_parameter(name, decrypt=False, env=ENV):
+def get_parameter(name, decrypt=False, env=ENV):
     '''Returns a parameter from the Parameter store.'''
 
     # retrieve value from parameter store
-    return SSM.get_parameter(Name=f'/{env}/{name}',
-                             WithDecryption=decrypt)['Parameter']['Value'] """
+    return SSM.get_parameter(Name=f'/DUDOPERUDO/{env}/{name}',
+                             WithDecryption=decrypt)['Parameter']['Value']
 
 def set_value(name, decrypt=False, env=ENV):
     '''Returns a value from the environment or parameter store.'''
     if ENV == 'DEV':
         return os.getenv(name)
-    """ elif env in ['STAG', 'PROD', 'ALL']: 
+    elif env in ['STAG', 'PROD', 'ALL']: 
         return get_parameter(name, decrypt=decrypt, env=env)
     else:
-        raise ValueError('Invalid environment.') """
+        raise ValueError('Invalid environment.')
     
 def set_llm_value(name, decrypt=False, env=ENV):
     '''
@@ -54,7 +65,7 @@ def set_llm_value(name, decrypt=False, env=ENV):
 ## set configuration
 
 django = {
-    'secret_key': set_value('DJANGO_SECRET_KEY', decrypt=True),
+    'secret_key': set_value('DJANGO_SECRET_KEY', decrypt=True, env='ALL'),
 }
 
 database = {

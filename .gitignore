@@ -20,6 +20,8 @@ node_modules/
 build-prod/
 build-stag/
 build/
+build-prod-old/
+build-stag-old/
 
 
 

@@ -1,3 +1,7 @@
 1.0.0
     - Initial release
     - incorporates the base game of Perudo, plus the chat function
+1.0.1
+    - Tried to slow down the pace of the game, so it's easier to keep up with
+        - Added a factor to multiply each player's move pause by - to slow down the moves
+        - Added a factor to multiply the chat pause by - to slow down the chat

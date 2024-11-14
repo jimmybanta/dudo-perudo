@@ -181,6 +181,9 @@ def get_move(request):
         logger.exception(f'Error getting move for {current_player}')
         return HttpResponse('Server error. Please try again.', status=255)
     
+    # make the pause longer by a set factor
+    pause = pause * 4
+    
     return JsonResponse({'move': move, 'pause': pause})
     
 @api_view(['POST'])
@@ -395,6 +398,8 @@ def get_chat_messages(request):
                 message_dict['delay'] = 0
             # otherwise, add the total delay on
             else:
+                # multiply message_delay by a set factor
+                message_delay = message_delay * 5
                 message_dict['delay'] = message_delay + total_delay
 
             # if there's no text, then break

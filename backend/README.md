@@ -56,6 +56,8 @@ Contains the player classes for the game.
 Contains text files for prompting and random setup of a game.
 #### backend
 Contains the settings for the Django application.
+#### tests
+Contains tests for the game.
 #### config.py
 Contains the configuration for the game - runs on startup to pull values from s3 parameter store.
 #### current_version.json

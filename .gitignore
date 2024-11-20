@@ -10,7 +10,6 @@ run.py
 
 deploy-prod.sh
 
-tests
 __pycache__
 
 _graveyard/
@@ -23,6 +22,7 @@ build/
 build-prod-old/
 build-stag-old/
 
+logs/
 
 
 
